@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>BabylonML - Local Test</title>
+  <style>
+    /* Basic styling to make the scene visible */
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden; /* Prevent scrollbars */
+      height: 100%;
+      width: 100%;
+    }
+    bml-scene {
+      width: 100vw; /* Viewport width */
+      height: 100vh; /* Viewport height */
+      display: block; /* Make it a block element */
+    }
+    canvas {
+      display: block; /* Prevent potential small gap below canvas */
+    }
+  </style>
+  <!--
+    Load the FRAMEWORK SCRIPT.
+    IMPORTANT: We point to the *unminified* development build
+    ('../dist/babylonml.js') for easier debugging locally.
+    The path '../dist/' means "go up one level from 'examples/'
+    and then into the 'dist/' folder".
+  -->
+  <script src="../dist/babylonml.js"></script> 
+</head>
+<body>
+  <!-- The root element for the Babylon.js experience -->
+  <bml-scene>
+
+    <!--
+      An Entity using basic components (assuming they are registered).
+      Even if position/geometry/material aren't fully functional yet,
+      the framework should attempt to parse these attributes.
+    -->
+    <bml-entity
+      id="my-box"
+      position="0 1 -3"
+      rotation="0 45 0"
+      geometry="type: box; width: 1; height: 1; depth: 1"
+      material="type: standard; diffuseColor: #FF0000">
+        <!-- You could potentially nest entities -->
+        <!-- <bml-entity id="nested-sphere" position="0 1 0" geometry="type: sphere"></bml-entity> -->
+    </bml-entity>
+
+     <!-- A ground plane -->
+     <bml-entity
+          id="ground"
+          position="0 0 -3"
+          geometry="type: ground; width: 5; height: 5"
+          material="type: standard; diffuseColor: #444444">
+      </bml-entity>
+
+    <!--
+      If you haven't implemented default camera/light in <bml-scene>,
+      you might need explicit ones (once their components are ready)
+      <bml-entity camera="type: free; position: 0 1.6 -5"></bml-entity>
+      <bml-entity light="type: hemispheric; intensity: 0.7"></bml-entity>
+    -->
+
+  </bml-scene>
+
+  <script>
+    // Optional: You can add JavaScript here to interact with the scene
+    // after it's potentially ready.
+    const sceneEl = document.querySelector('bml-scene');
+
+    // Example: Listening for the custom ready event (if you implemented it)
+    sceneEl.addEventListener('bml-scene-ready', (event) => {
+      console.log('EVENT: bml-scene-ready received!', event.detail);
+      const babylonScene = event.detail.scene;
+      // You could potentially manipulate the Babylon.js scene directly here
+      // babylonScene.getMeshByName('my-box').scaling.y = 2;
+    });
+
+    // Example: Accessing BML global API (if implemented)
+    if (window.BML) {
+      console.log('BML Global API found:', BML);
+      // Example: How a user might register their own component
+      // BML.registerComponent('my-custom-spin', { ... });
+    }
+
+     // Example: Simple interaction after a delay
+    // setTimeout(() => {
+    //    const box = document.getElementById('my-box');
+    //    if (box) {
+    //        console.log('Attempting to change box color via attribute...');
+    //        box.setAttribute('material', 'diffuseColor: #0000FF'); // Change color to blue
+    //    }
+    // }, 5000); // After 5 seconds
+  </script>
+
+</body>
+</html>
