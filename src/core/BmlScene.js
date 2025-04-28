@@ -2,6 +2,7 @@
 
 // Import necessary Babylon.js classes (again, explicit imports)
 import { Engine, Scene, HemisphericLight, Vector3, FreeCamera, Color3, WebXRDefaultExperience } from '@babylonjs/core';
+import '@babylonjs/inspector'; // Import the inspector side effect
 
 // Import the central brain for components
 import { ComponentManager } from './ComponentManager.js';
@@ -16,6 +17,7 @@ export class BmlScene extends HTMLElement {
     #resizeObserver = null; // To handle canvas resizing
     #isReady = false; // Flag to indicate scene setup completion
     #xrHelper = null; // Instance of WebXRDefaultExperience
+    #inspectorKeyDownHandler = null; // Handler for inspector toggle
 
     constructor() {
         super(); // Always call super() first in constructor for HTMLElement subclasses
@@ -70,6 +72,21 @@ export class BmlScene extends HTMLElement {
         // An alternative is using events or a registry.
         this.babylonScene = this.#scene;
         this.babylonEngine = this.#engine; // Expose engine too?
+
+        // --- Inspector Toggle Setup ---
+        this.#inspectorKeyDownHandler = (event) => {
+            // Check for CTRL+I (keyCode 73 for 'I')
+            if (event.ctrlKey && event.keyCode === 73) {
+                if (this.#scene.debugLayer.isVisible()) {
+                    this.#scene.debugLayer.hide();
+                } else {
+                    this.#scene.debugLayer.show({ embedMode: false }); // embedMode recommended
+                }
+            }
+        };
+        // Attach listener to the window or a specific element if preferred
+        window.addEventListener('keydown', this.#inspectorKeyDownHandler);
+        console.log('<bml-scene>: Inspector toggle (CTRL+I) enabled.');
 
         // --- 3. Default Setup (Camera & Light) ---
         // Check if the user has explicitly added a camera or light element.
@@ -199,6 +216,13 @@ export class BmlScene extends HTMLElement {
             this.#xrHelper.dispose();
             this.#xrHelper = null;
             console.log('<bml-scene>: WebXR helper disposed.');
+        }
+
+        // Remove inspector keydown listener
+        if (this.#inspectorKeyDownHandler) {
+            window.removeEventListener('keydown', this.#inspectorKeyDownHandler);
+            this.#inspectorKeyDownHandler = null;
+            console.log('<bml-scene>: Inspector toggle listener removed.');
         }
 
          console.log('<bml-scene>: Cleanup complete.');

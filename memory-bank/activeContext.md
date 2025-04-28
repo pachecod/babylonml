@@ -1,8 +1,8 @@
-# Active Context: BabylonML - Documentation Improvements
+# Active Context: BabylonML - Documentation Fixes & Inspector Integration
 
 ## Current Focus
 
-Improving documentation and examples related to default scene setup (camera/light) and multiple camera handling. Recently fixed bugs in the multi-camera example and the core camera component's update logic.
+Addressed documentation formatting issues (missing navigation link), fixed a scrolling problem on the "Live Examples" page within the generated MkDocs site, and integrated the Babylon.js Inspector toggle (`Ctrl+I`).
 
 ## Task Breakdown (XR Support Added)
 
@@ -46,15 +46,26 @@ Improving documentation and examples related to default scene setup (camera/ligh
     *   Corrected the `update` method in `src/components/camera.js` to properly use pre-parsed `position` and `target` data, ensuring UniversalCamera works correctly.
 9.  **Fix Material Component Update Logic:** **DONE**
     *   Corrected the `update` method in `src/components/material.js` to convert parsed color objects (e.g., `{r,g,b}`) into `BABYLON.Color3` instances before applying them to material properties (e.g., `diffuseColor`), enabling dynamic updates via `setAttribute`.
+10. **Fix Documentation Formatting & Scrolling:** **DONE**
+    *   Added `components/camera.md` to the navigation in `mkdocs.yml`.
+    *   Created `docs/css/custom.css` to enable vertical scrolling on the main content area (`[role="main"]`).
+    *   Updated `mkdocs.yml` to include `extra_css: - css/custom.css`.
+    *   Rebuilt documentation using `npm run docs:build`.
+11. **Integrate Babylon.js Inspector:** **DONE**
+    *   Installed `@babylonjs/inspector` dependency.
+    *   Imported `@babylonjs/inspector` in `src/core/BmlScene.js`.
+    *   Added event listener in `connectedCallback` to toggle `scene.debugLayer` on `Ctrl+I`.
+    *   Added listener removal in `disconnectedCallback`.
 
 ## Next Steps
 
-1.  Update `memory-bank/progress.md` to reflect the documentation/example updates and the recent fixes (multi-camera example, camera component update, material component update).
-2.  **(DONE)** Run the build process (`npm run build`) to ensure the library includes recent changes.
-3.  Test the examples, paying special attention to `multi_camera_scene.html` and `basic_scene.html` to confirm fixes.
-4.  Consider implementing a basic `light` component.
-5.  Update `README.md` to mention recent features (XR, camera, etc.).
-6.  Update `package.json` version if appropriate.
+1.  Update `memory-bank/progress.md` to reflect the documentation fixes and inspector integration.
+2.  Run the library build process (`npm run build`) to bundle the inspector changes into the distributable file.
+3.  Test the documentation site locally (`npm run docs:serve`) to verify the navigation fix and scrolling behavior on the "Live Examples" page.
+4.  Test the live examples (or local examples using the built library) to confirm the `Ctrl+I` inspector toggle works.
+5.  Consider implementing a basic `light` component.
+6.  Update `README.md` to mention recent features (XR, camera, inspector, etc.).
+7.  Update `package.json` version if appropriate (e.g., to 1.2.1 or 1.3.0).
 
 -   **Camera Activation:** The first camera component initialized is set as active. Need to consider behavior if multiple cameras are defined or if the active one is removed dynamically. **Status: Basic 'first-one-wins' logic implemented and documented.**
 -   **Camera Updates:** The `update` logic disposes and recreates the camera. It now correctly uses pre-parsed data for properties like `position` and `target`. A more refined approach (updating existing properties) could be implemented later. **Status: Basic recreate logic implemented, data parsing fixed.**

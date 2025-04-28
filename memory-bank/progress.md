@@ -22,15 +22,19 @@
 -   Updated `geometry` component documentation (`docs/components/geometry.md`).
 -   Created `camera` component documentation (`docs/components/camera.md`), updated for multi-camera handling.
 -   Updated scene documentation (`docs/concepts/scene.md`) for `xr` attribute and default camera/light behavior.
--   **NEW:** Added documentation clarification about the non-functional `light` attribute placeholder.
+-   Added documentation clarification about the non-functional `light` attribute placeholder.
+-   **NEW:** Integrated Babylon.js Inspector toggle (`Ctrl+I`) into the core scene (`BmlScene.js`).
+-   **NEW:** Fixed documentation navigation (added `camera.md` to `mkdocs.yml`).
+-   **NEW:** Fixed documentation page scrolling issue (added custom CSS via `extra_css` in `mkdocs.yml`).
 
 ## What's Left to Build
 
-1.  **Build:** Run `npm run build` to bundle the library including recent changes.
-2.  **Test Examples:** Test new examples (`default_scene.html`, `explicit_camera_light_placeholder.html`, `multi_camera_scene.html`) and existing ones (`vr_scene.html`, `ar_scene.html`).
-3.  **README:** Update `README.md` to mention recent features (XR, camera, default behavior, etc.).
-4.  **Versioning:** Update `package.json` version (e.g., to 1.2.0 or 1.3.0).
-5.  **Light Component:** Consider implementing a basic `light` component.
+1.  **Build:** Run `npm run build` to bundle the library including recent changes (especially the Inspector integration).
+2.  **Test Docs:** Run `npm run docs:serve` and verify navigation and scrolling on the "Live Examples" page.
+3.  **Test Examples:** Test examples (local or live) to confirm `Ctrl+I` inspector toggle works.
+4.  **README:** Update `README.md` to mention recent features (XR, camera, inspector, etc.).
+5.  **Versioning:** Update `package.json` version (e.g., to 1.2.1 or 1.3.0).
+6.  **Light Component:** Consider implementing a basic `light` component.
 6.  **(DONE)** Custom Mesh Loading: Implemented in `geometry` component.
 7.  **(DONE)** PhotoDome: Implemented in `geometry` component.
 8.  **(DONE)** VideoDome: Implemented in `geometry` component.
@@ -41,6 +45,9 @@
 13. **(DONE)** Documentation & Examples (Defaults/Multi-Camera): Updated docs for scene/camera, created new examples.
 14. **(DONE)** Fix Multi-Camera Example: Corrected JS logic in `examples/multi_camera_scene.html` to properly attach controls on switch.
 15. **(DONE)** Fix Camera Component Update Logic: Corrected `update` method in `src/components/camera.js` to use pre-parsed data.
+16. **(DONE)** Fix Documentation Formatting: Added `camera.md` to `mkdocs.yml` navigation.
+17. **(DONE)** Fix Documentation Scrolling: Added custom CSS to allow scrolling on main content area.
+18. **(DONE)** Integrate Inspector: Added `@babylonjs/inspector` dependency and toggle logic (`Ctrl+I`) to `BmlScene.js`.
 
 ## Current Status
 
@@ -48,9 +55,11 @@
 -   Basic primitives, transform, material, geometry (including mesh/domes), and camera components are functional.
 -   Basic XR support (VR/AR session entry) via `xr` attribute on `<bml-scene>` is implemented.
 -   Documentation updated for `geometry`, `camera` (including multi-camera), and `scene` (XR attribute, default camera/light).
--   Memory Bank files (`activeContext.md`, `progress.md`) updated to reflect recent fixes and documentation (multi-camera example, camera component update).
+-   Documentation navigation and scrolling issues fixed.
+-   Babylon.js Inspector toggle (`Ctrl+I`) integrated.
+-   Memory Bank files (`activeContext.md`, `progress.md`) updated to reflect recent fixes, documentation changes, and inspector integration.
 -   Examples created for VR, AR, default scene setup, explicit camera/light placeholder, and multiple cameras (including fixes for switching logic and camera component).
--   Next steps involve building the library, testing the examples (especially multi-camera), and potentially implementing a `light` component.
+-   Next steps involve building the library, testing the documentation site and examples (including inspector toggle), updating the README, and considering a `light` component.
 
 ## Known Issues
 
@@ -78,3 +87,4 @@
 -   **Decision Implemented:** Created a new `camera` component to handle camera definitions declaratively.
 -   **Decision Implemented:** Added basic XR support via an `xr` attribute on `<bml-scene>` leveraging `WebXRDefaultExperience`.
 -   **Decision Implemented:** Clarified default camera/light behavior and multiple camera handling in documentation and examples.
+-   **Decision Implemented:** Integrated Babylon.js Inspector toggle via `Ctrl+I` for easier debugging.

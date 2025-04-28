@@ -80,7 +80,14 @@
 <li>
     <a href="../../components/material/" class="dropdown-item">Material</a>
 </li>
+                                    
+<li>
+    <a href="../../components/camera/" class="dropdown-item">Camera</a>
+</li>
                                 </ul>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../../examples/" class="nav-link">Live Examples</a>
                             </li>
                         </ul>
 
@@ -128,6 +135,10 @@
               <ul class="nav flex-column">
               </ul>
             </li>
+            <li class="nav-item" data-bs-level="2"><a href="#default-camera-and-light" class="nav-link">Default Camera and Light</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
             <li class="nav-item" data-bs-level="2"><a href="#styling" class="nav-link">Styling</a>
               <ul class="nav flex-column">
               </ul>
@@ -171,9 +182,23 @@
 <p>This minimal example will:
 1.  Create a Babylon.js Engine and Scene.
 2.  Create a <code>&lt;canvas&gt;</code> element filling the <code>&lt;bml-scene&gt;</code> container.
-3.  Add a default camera (likely a <code>FreeCamera</code>).
-4.  Add a default light (likely a <code>HemisphericLight</code>).
-5.  Start rendering the scene (which will initially be empty except for the default box entity).</p>
+3.  Add a default camera (a <code>FreeCamera</code>).
+4.  Add a default light (a <code>HemisphericLight</code>).
+5.  Start rendering the scene (which will initially contain the box entity).</p>
+<h2 id="default-camera-and-light">Default Camera and Light</h2>
+<p>To make it easy to get started, <code>&lt;bml-scene&gt;</code> automatically creates a default camera and light source under specific conditions:</p>
+<ul>
+<li><strong>Default Camera:</strong> If no element within the <code>&lt;bml-scene&gt;</code> has a <code>camera</code> attribute (e.g., <code>&lt;bml-entity camera="..."&gt;</code>), a <code>BABYLON.FreeCamera</code> named <code>default_camera</code> is created. It's positioned at <code>(0, 1.6, -5)</code> and has mouse/touch controls attached to the canvas.</li>
+<li><strong>Default Light:</strong> If no element within the <code>&lt;bml-scene&gt;</code> has a <code>light</code> attribute (e.g., <code>&lt;bml-entity light="..."&gt;</code>), a <code>BABYLON.HemisphericLight</code> named <code>default_light</code> is created, providing basic ambient illumination from above.</li>
+</ul>
+<p><strong>Overriding Defaults:</strong></p>
+<ul>
+<li>If you add <em>any</em> element with a <code>camera</code> attribute, the default camera will <strong>not</strong> be created. You are then responsible for defining your own camera(s) using the <a href="../../components/camera/">camera component</a>.</li>
+<li>If you add <em>any</em> element with a <code>light</code> attribute, the default light will <strong>not</strong> be created.<ul>
+<li><strong>Important Note:</strong> As of the current version, there is no built-in <code>light</code> component. Adding a <code>light</code> attribute <em>only</em> prevents the default light; it does not automatically create a new light source based on the attribute value. To add specific lights (PointLight, SpotLight, etc.), you currently need to use custom JavaScript that interacts with the Babylon.js scene (e.g., within the <code>bml-scene-ready</code> event). A dedicated <code>light</code> component is planned for future development.</li>
+</ul>
+</li>
+</ul>
 <h2 id="styling">Styling</h2>
 <p>It's crucial to give <code>&lt;bml-scene&gt;</code> dimensions using CSS, otherwise the canvas might not be visible or have zero size. A common approach is to make it fill the viewport:</p>
 <pre><code class="language-css">html, body {
@@ -196,7 +221,33 @@ canvas {
 }
 </code></pre>
 <h2 id="attributes">Attributes</h2>
-<p><em>(Currently, <code>&lt;bml-scene&gt;</code> doesn't have specific attributes defined for configuration, but future versions might include options for engine settings, physics, etc.)</em></p>
+<ul>
+<li>
+<p><strong><code>xr</code></strong>: Enables WebXR support for the scene. This attribute initializes the Babylon.js <code>WebXRDefaultExperience</code> helper, providing a quick way to add VR or AR capabilities.</p>
+<ul>
+<li><code>xr="vr"</code>: Initializes the scene for Virtual Reality (VR). Requires a VR-capable headset and browser.</li>
+<li><code>xr="ar"</code>: Initializes the scene for Augmented Reality (AR). Requires an AR-capable device (usually mobile) and browser, and often requires the page to be served over HTTPS.</li>
+<li><code>xr</code> or <code>xr="true"</code>: Initializes a default XR experience, typically VR.</li>
+<li>If the attribute is omitted, XR support is disabled.</li>
+</ul>
+<p><strong>Example:</strong>
+```html
+<!-- Enable VR mode -->
+<bml-scene xr="vr">
+  <bml-entity geometry="type: box" position="0 1 -3"></bml-entity>
+</bml-scene></p>
+<p><!-- Enable AR mode -->
+<bml-scene xr="ar">
+  <bml-entity geometry="type: sphere" position="0 1 -2"></bml-entity>
+</bml-scene>
+```
+<strong>Note:</strong> WebXR support is dependent on the user's browser and hardware capabilities. The framework will attempt to initialize the requested mode, but it may fail if the requirements are not met. Check the browser console for messages regarding XR initialization status.</p>
+<ul>
+<li><strong>Live VR Example:</strong> <a href="https://bayblonml-frontend.netlify.app/examples/vr_scene.html">View VR Scene</a></li>
+<li><strong>Live AR Example:</strong> <a href="https://bayblonml-frontend.netlify.app/examples/ar_scene.html">View AR Scene</a> (Requires compatible device/browser)</li>
+</ul>
+</li>
+</ul>
 <h2 id="events">Events</h2>
 <ul>
 <li>

@@ -80,7 +80,14 @@
 <li>
     <a href="../material/" class="dropdown-item">Material</a>
 </li>
+                                    
+<li>
+    <a href="../camera/" class="dropdown-item">Camera</a>
+</li>
                                 </ul>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../../examples/" class="nav-link">Live Examples</a>
                             </li>
                         </ul>
 
@@ -409,6 +416,9 @@ Example (Cone): <code>&lt;bml-entity geometry="type: cone; height: 2; diameterBo
 &lt;!-- Load from a URL --&gt;
 &lt;bml-entity geometry=&quot;type: mesh; src: https://example.com/models/spaceship.gltf&quot;&gt;&lt;/bml-entity&gt;
 </code></pre>
+<ul>
+<li><strong>Live Example:</strong> <a href="https://bayblonml-frontend.netlify.app/examples/mesh_example.html">View Mesh Loading Example</a></li>
+</ul>
 <p><strong>Note:</strong> Mesh loading is asynchronous. The mesh will appear once loading is complete. Check the browser console for loading progress and errors.</p>
 <h3 id="type-photodome"><code>type: photodome</code></h3>
 <p>Creates a large sphere with an equirectangular photographic texture mapped to the inside, used for displaying 360° photos. Uses <code>BABYLON.PhotoDome</code>.</p>
@@ -449,6 +459,9 @@ Example (Cone): <code>&lt;bml-entity geometry="type: cone; height: 2; diameterBo
 </tbody>
 </table>
 <p>Example: <code>&lt;bml-entity geometry="type: photodome; src: assets/textures/skybox_360.jpg; size: 1500"&gt;&lt;/bml-entity&gt;</code></p>
+<ul>
+<li><strong>Live Example:</strong> <a href="https://bayblonml-frontend.netlify.app/examples/photodome_example.html">View Photo Dome Example</a></li>
+</ul>
 <h3 id="type-videodome"><code>type: videodome</code></h3>
 <p>Creates a large sphere with an equirectangular video texture mapped to the inside, used for displaying 360° videos. Uses <code>BABYLON.VideoDome</code>.</p>
 <table>
@@ -512,6 +525,9 @@ Example (Cone): <code>&lt;bml-entity geometry="type: cone; height: 2; diameterBo
 </tbody>
 </table>
 <p>Example: <code>&lt;bml-entity geometry="type: videodome; src: assets/videos/surfing_360.mp4; size: 1200; muted: false; clickToPlay: true"&gt;&lt;/bml-entity&gt;</code></p>
+<ul>
+<li><strong>Live Example:</strong> <a href="https://bayblonml-frontend.netlify.app/examples/videodome_example.html">View Video Dome Example</a></li>
+</ul>
 <h2 id="notes">Notes</h2>
 <ul>
 <li>If you change the <code>type</code> or the <code>src</code> (for relevant types), the old geometry object (mesh, dome) will be disposed and a new one created or loaded.</li>

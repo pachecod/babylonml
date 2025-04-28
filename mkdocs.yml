@@ -19,6 +19,7 @@ nav:
     - Scale: components/scale.md
     - Geometry: components/geometry.md
     - Material: components/material.md
+    - Camera: components/camera.md
   - Live Examples: examples.md
 
 # Theme configuration (using the default 'mkdocs' theme for now)
@@ -33,6 +34,8 @@ theme:
   # palette:
   #   primary: 'blue'
   #   accent: 'light blue'
+  extra_css:
+    - css/custom.css
 
 # Markdown extensions (optional, add features like tables, footnotes, etc.)
 # markdown_extensions:
