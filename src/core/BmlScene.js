@@ -1,7 +1,7 @@
 // src/core/BmlScene.js
 
 // Import necessary Babylon.js classes (again, explicit imports)
-import { Engine, Scene, HemisphericLight, Vector3, FreeCamera, Color3 } from '@babylonjs/core';
+import { Engine, Scene, HemisphericLight, Vector3, FreeCamera, Color3, WebXRDefaultExperience } from '@babylonjs/core';
 
 // Import the central brain for components
 import { ComponentManager } from './ComponentManager.js';
@@ -15,6 +15,7 @@ export class BmlScene extends HTMLElement {
     #observer = null; // Instance of MutationObserver
     #resizeObserver = null; // To handle canvas resizing
     #isReady = false; // Flag to indicate scene setup completion
+    #xrHelper = null; // Instance of WebXRDefaultExperience
 
     constructor() {
         super(); // Always call super() first in constructor for HTMLElement subclasses
@@ -130,6 +131,18 @@ export class BmlScene extends HTMLElement {
         this.#isReady = true; // Set ready flag
         this.dispatchEvent(new CustomEvent('bml-scene-ready', { detail: { scene: this.#scene, engine: this.#engine } }));
         console.log("<bml-scene>: Initialization complete. 'bml-scene-ready' event dispatched.");
+
+        // --- XR Initialization (New) ---
+        // Must happen after scene/engine are ready and potentially after initial children are processed
+        // if XR depends on scene content (though WebXRDefaultExperience is usually okay early).
+        // Check attribute *after* basic setup.
+        const xrAttribute = this.getAttribute('xr');
+        if (xrAttribute !== null) { // Check if the attribute exists
+            // Use setTimeout to ensure this runs after the current execution context,
+            // giving other initializations (like camera components) a chance to run first.
+            // This helps avoid potential race conditions if XR setup relies on an active camera.
+            setTimeout(() => this.#initializeXR(xrAttribute), 0);
+        }
     }
 
     /**
@@ -180,6 +193,13 @@ export class BmlScene extends HTMLElement {
         }
         this.#canvas = null;
         this.#isReady = false; // Reset ready flag
+
+        // Dispose of XR helper
+        if (this.#xrHelper) {
+            this.#xrHelper.dispose();
+            this.#xrHelper = null;
+            console.log('<bml-scene>: WebXR helper disposed.');
+        }
 
          console.log('<bml-scene>: Cleanup complete.');
     }
@@ -258,4 +278,78 @@ export class BmlScene extends HTMLElement {
     get babylonCanvas() {
         return this.#canvas;
     }
+
+    // --- Private Async Method for XR Initialization ---
+    async #initializeXR(xrMode) {
+        if (!this.#scene) {
+            console.error('<bml-scene>: Scene not available for XR initialization.');
+            return;
+        }
+        console.log(`<bml-scene>: Initializing WebXR for mode: ${xrMode || 'default'}`);
+        try {
+            // Determine options based on the attribute value
+            let options = {};
+            const mode = xrMode.toLowerCase();
+
+            if (mode === 'ar') {
+                // Basic AR options
+                options = {
+                    uiOptions: { sessionMode: 'immersive-ar', referenceSpaceType: 'local-floor' }, // Use local-floor for AR
+                    optionalFeatures: true // Request optional features like hit-test, anchors etc.
+                };
+            } else if (mode === 'vr' || mode === '' || mode === 'true') { // Default to VR ('vr', 'true', or empty attribute)
+                options = {
+                    uiOptions: { sessionMode: 'immersive-vr', referenceSpaceType: 'local-floor' }, // Use local-floor for VR too
+                    // optionalFeatures: true // Enable controller support etc.
+                };
+            } else {
+                console.warn(`<bml-scene>: Unknown xr attribute value "${xrMode}". Defaulting to VR.`);
+                 options = {
+                    uiOptions: { sessionMode: 'immersive-vr', referenceSpaceType: 'local-floor' },
+                };
+            }
+
+            // Ensure XR is supported before attempting creation using the standard WebXR API
+            if (!navigator.xr) {
+                console.warn('<bml-scene>: WebXR is not available on this browser/device.');
+                return; // Stop initialization if WebXR API itself isn't present
+            }
+            const xrSupported = await navigator.xr.isSessionSupported(options.uiOptions.sessionMode);
+            if (!xrSupported) {
+                console.warn(`<bml-scene>: WebXR session mode "${options.uiOptions.sessionMode}" not supported on this browser/device.`);
+                // Optionally provide feedback to the user (e.g., disable button, show message) - WebXRDefaultExperience might do this too
+                return; // Stop initialization if not supported
+            }
+
+            this.#xrHelper = await WebXRDefaultExperience.CreateAsync(this.#scene, options);
+
+            if (this.#xrHelper) {
+                console.log('<bml-scene>: WebXRDefaultExperience created successfully.');
+
+                // Example: Log state changes
+                this.#xrHelper.baseExperience.onStateChangedObservable.add((state) => {
+                    console.log(`<bml-scene>: WebXR state changed to: ${WebXRState[state]}`);
+                });
+
+                // You might need to handle cases where the default camera created by
+                // WebXRDefaultExperience should be used instead of one created earlier.
+                // Or ensure the user-defined camera works correctly in XR.
+                // For now, let Babylon's default helper manage the camera switching.
+
+            } else {
+                 console.error('<bml-scene>: Failed to create WebXRDefaultExperience.');
+            }
+        } catch (error) {
+            console.error('<bml-scene>: Error initializing WebXR:', error);
+            // Handle cases where XR might not be supported by the browser/device
+        }
+    }
 }
+
+// Helper to get string name for WebXRState enum (optional, for logging)
+const WebXRState = {
+    0: 'NOT_IN_XR',
+    1: 'ENTERING_XR',
+    2: 'IN_XR',
+    3: 'EXITING_XR'
+};

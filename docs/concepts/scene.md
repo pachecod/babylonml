@@ -54,7 +54,25 @@ canvas {
 
 ## Attributes
 
-*(Currently, `<bml-scene>` doesn't have specific attributes defined for configuration, but future versions might include options for engine settings, physics, etc.)*
+*   **`xr`**: Enables WebXR support for the scene. This attribute initializes the Babylon.js `WebXRDefaultExperience` helper, providing a quick way to add VR or AR capabilities.
+    *   `xr="vr"`: Initializes the scene for Virtual Reality (VR). Requires a VR-capable headset and browser.
+    *   `xr="ar"`: Initializes the scene for Augmented Reality (AR). Requires an AR-capable device (usually mobile) and browser, and often requires the page to be served over HTTPS.
+    *   `xr` or `xr="true"`: Initializes a default XR experience, typically VR.
+    *   If the attribute is omitted, XR support is disabled.
+
+    **Example:**
+    ```html
+    <!-- Enable VR mode -->
+    <bml-scene xr="vr">
+      <bml-entity geometry="type: box" position="0 1 -3"></bml-entity>
+    </bml-scene>
+
+    <!-- Enable AR mode -->
+    <bml-scene xr="ar">
+      <bml-entity geometry="type: sphere" position="0 1 -2"></bml-entity>
+    </bml-scene>
+    ```
+    **Note:** WebXR support is dependent on the user's browser and hardware capabilities. The framework will attempt to initialize the requested mode, but it may fail if the requirements are not met. Check the browser console for messages regarding XR initialization status.
 
 ## Events
 

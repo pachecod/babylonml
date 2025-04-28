@@ -1,10 +1,10 @@
-# Active Context: BabylonML - Feature Expansion
+# Active Context: BabylonML - XR Implementation
 
 ## Current Focus
 
-Implementing and verifying the `camera` component to allow declarative camera definition and control within BabylonML scenes. Addressing the issue where a default camera was overriding the user-defined camera in `examples/mesh_example.html`.
+Implementing basic WebXR (VR and AR) support via a declarative attribute on the `<bml-scene>` element.
 
-## Task Breakdown (Camera Component Added)
+## Task Breakdown (XR Support Added)
 
 1.  **Camera Component Implementation:** **DONE**
     *   Created `src/components/camera.js` with logic for `arcRotate` and `universal` types.
@@ -17,27 +17,31 @@ Implementing and verifying the `camera` component to allow declarative camera de
     *   Added `src` attribute parsing.
     *   Integrated `SceneLoader.ImportMeshAsync`.
     *   Updated documentation (`docs/components/geometry.md`).
-
-2.  **PhotoDome Implementation:** **DONE**
+3.  **PhotoDome Implementation:** **DONE**
     *   Modified `geometry` component to handle `type: 'photodome'`.
     *   Integrated `BABYLON.PhotoDome`.
     *   Added `src`, `resolution`, `size`, `useDirectMapping` attributes.
     *   Updated documentation.
-
-3.  **VideoDome Implementation:** **DONE**
+4.  **VideoDome Implementation:** **DONE**
     *   Modified `geometry` component to handle `type: 'videodome'`.
     *   Integrated `BABYLON.VideoDome`.
     *   Added `src`, `resolution`, `size`, `autoPlay`, `loop`, `muted`, `clickToPlay`, `poster` attributes.
     *   Updated documentation.
+5.  **Basic XR Support:** **DONE**
+    *   Added `xr` attribute handling (`vr`, `ar`, `true`) to `<bml-scene>` (`src/core/BmlScene.js`).
+    *   Integrated `WebXRDefaultExperience` for basic session management.
+    *   Added XR helper initialization and disposal logic.
+    *   Updated scene documentation (`docs/concepts/scene.md`).
+    *   Created VR example (`examples/vr_scene.html`).
+    *   Created AR example (`examples/ar_scene.html`).
 
 ## Next Steps
 
-1.  Update `memory-bank/progress.md` to reflect the addition of the `camera` component.
+1.  Update `memory-bank/progress.md` to reflect the addition of the `xr` feature.
 2.  Run the build process (`npm run build`) to ensure the changes are bundled correctly.
-3.  Verify `examples/mesh_example.html` uses the `ArcRotateCamera` as intended.
-4.  Update `README.md` if necessary.
-5.  Update `package.json` version if appropriate.
-6.  **(DONE)** Create examples for `mesh`, `photodome`, `videodome`.
+3.  Test the new examples (`vr_scene.html`, `ar_scene.html`) in compatible environments (requires build first).
+4.  Update `README.md` to mention the new XR feature.
+5.  Update `package.json` version if appropriate (e.g., to 1.2.0).
 
 ## Active Decisions/Considerations
 
@@ -46,3 +50,6 @@ Implementing and verifying the `camera` component to allow declarative camera de
 -   **Geometry Component Decision:** Extended the existing `geometry` component for `mesh`, `photodome`, `videodome`. **Decision Implemented.**
 -   **Asset Loading Errors:** Need robust error handling for external assets. **Status: Basic console logging implemented.**
 -   **Async Loading:** Ensure correct handling within lifecycle. **Status: Implemented for mesh loading.**
+-   **XR Initialization Timing:** Used `setTimeout` in `BmlScene` to delay XR initialization slightly, aiming to avoid race conditions with camera components. Needs testing. **Status: Implemented.**
+-   **XR Error Handling:** Basic `try...catch` and support checks added in `BmlScene.#initializeXR`. More user-facing feedback could be added. **Status: Basic implementation.**
+-   **XR Feature Scope:** Initial implementation uses `WebXRDefaultExperience` for basic session entry. Controllers, teleportation, hit-testing etc., are not yet declaratively supported. **Status: Basic implementation.**

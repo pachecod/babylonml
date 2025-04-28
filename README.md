@@ -9,6 +9,7 @@ BabylonML is a declarative, HTML-like framework for creating 3D scenes using the
 *   **Primitives:** Easily create basic shapes (`box`, `sphere`, `plane`, `cylinder`, `cone`, `ground`).
 *   **Custom Mesh Loading:** Load external 3D models (`.glb`, `.gltf`, etc.) using `<bml-entity geometry="type: mesh; src: ...">`.
 *   **360° Experiences:** Display immersive 360° photos and videos using `<bml-entity geometry="type: photodome; src: ...">` and `<bml-entity geometry="type: videodome; src: ...">`.
+*   **NEW:** **WebXR Support:** Enable basic VR and AR experiences using the `xr` attribute on `<bml-scene>` (e.g., `xr="vr"` or `xr="ar"`).
 *   **Extensible:** Designed to allow for custom components and primitives.
 
 ## Basic Usage
@@ -80,5 +81,5 @@ To build the library from source:
 # Install dependencies
 npm install
 
-# Build the UMD bundle (output to dist/babylonml.umd.js)
+# Build the IIFE bundle (output to dist/babylonml.js)
 npm run build
