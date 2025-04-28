@@ -1,8 +1,8 @@
 # Netlify configuration for MkDocs site
 
 [build]
-# Command to build the site: Install MkDocs, then run the build specifying the output directory
-command = "pip install mkdocs && mkdocs build --clean --site-dir _site"
+# Command to build the site: Install MkDocs, then run the build using python -m to ensure it's found
+command = "pip install mkdocs && python -m mkdocs build --clean --site-dir _site"
 # Directory containing the built site relative to the repository root
 publish = "_site"
 
