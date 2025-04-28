@@ -13,6 +13,7 @@ const baseConfig = {
     inlineDynamicImports: true, // Bundle dynamic imports
     globals: {
       '@babylonjs/core': 'BABYLON' // Assumes Babylon.js is available globally as BABYLON if not bundled
+      // 'babylonjs': 'BABYLON' // Removed - no longer importing 'babylonjs' directly
     }
   },
   plugins: [ // Base plugins (will be spread)
@@ -23,7 +24,8 @@ const baseConfig = {
     // List external dependencies if you don't want to bundle them
     // For now, we'll try bundling Babylon.js. If the bundle gets too large,
     // we might list '@babylonjs/core' here and load it separately via CDN.
-    // '@babylonjs/core'
+    // '@babylonjs/core' // Treat Babylon.js core as external - Bundling it instead
+    // 'babylonjs' // Removed - no longer importing 'babylonjs' directly
   ]
 };
 

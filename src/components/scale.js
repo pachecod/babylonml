@@ -15,20 +15,20 @@ export default function registerScaleComponent(ComponentManager) {
             // 'data' is the parsed scale {x, y, z}
             // console.log('Updating scale to:', data);
 
-            if (this.babylonNode) { // Ensure the Babylon.js node exists
+            if (this.el.babylonNode) { // Ensure the Babylon.js node exists via the element
                 // Update the scaling of the underlying Babylon.js TransformNode/Mesh
                 // Ensure Parsers.vec3ToObject exists and correctly converts the object format
                 if (Parsers.vec3ToObject) {
-                    this.babylonNode.scaling.copyFrom(Parsers.vec3ToObject(data));
+                    this.el.babylonNode.scaling.copyFrom(Parsers.vec3ToObject(data));
                 } else {
                      // Fallback or direct assignment if vec3ToObject is not defined yet
-                     this.babylonNode.scaling.x = data.x;
-                     this.babylonNode.scaling.y = data.y;
-                     this.babylonNode.scaling.z = data.z;
+                     this.el.babylonNode.scaling.x = data.x;
+                     this.el.babylonNode.scaling.y = data.y;
+                     this.el.babylonNode.scaling.z = data.z;
                      console.warn("Parsers.vec3ToObject not found, assigning scale components directly.");
                 }
             } else {
-                console.warn("Scale component update called before babylonNode was ready on", this);
+                console.warn("Scale component update called before babylonNode was ready on", this.el);
             }
         },
 

@@ -19,10 +19,20 @@ export default function registerGeometryComponent(ComponentManager) {
         },
 
         // init() - Called once when the component is first attached.
-        init(data) {
+        // Added readiness check and made async
+        async init(data) { // Make init async
             // console.log('Geometry component initializing with data:', data, 'on element:', this);
             this[GEOMETRY_OBJECT_KEY] = null; // Initialize tracking for the created object (mesh, dome, etc.)
             this[GEOMETRY_LOADING_KEY] = false; // Initialize loading state
+
+            // --- Readiness Check ---
+            // Ensure node and scene are ready before creating geometry.
+            if (!this.el.babylonNode || !this.el.sceneElement?.babylonScene) {
+                console.warn("Geometry component init called before babylonNode or scene was ready on", this.el);
+                // TODO: Consider deferring or using an event listener if this happens frequently.
+                return;
+            }
+            // Geometry creation logic will be moved here later
         },
 
         // update() - Called on initialization and attribute changes.
@@ -33,15 +43,17 @@ export default function registerGeometryComponent(ComponentManager) {
             // A more robust solution would involve cancellation tokens or ignoring stale results.
             if (this[GEOMETRY_LOADING_KEY]) {
                 console.warn("Geometry component is already loading, skipping update for:", data);
+                 return;
+             }
+
+            // Use cached scene element reference for stability during initialization
+            const cachedSceneEl = this.el.cachedSceneElement;
+            if (!this.el.babylonNode || !cachedSceneEl?.babylonScene) {
+                console.warn("Geometry component update called before babylonNode or scene was ready on", this.el);
                 return;
             }
 
-            if (!this.babylonNode || !this.sceneElement?.babylonScene) {
-                console.warn("Geometry component update called before babylonNode or scene was ready on", this);
-                return;
-            }
-
-            const scene = this.sceneElement.babylonScene;
+            const scene = cachedSceneEl.babylonScene; // Use cached reference
             const currentObject = this[GEOMETRY_OBJECT_KEY]; // Use the new key
             const geometryType = data.type?.toLowerCase();
             const currentObjectType = currentObject?.constructor?.name; // Get type of existing object if any
@@ -140,33 +152,80 @@ export default function registerGeometryComponent(ComponentManager) {
                             console.warn(`Geometry type "mesh" requires a "src" attribute.`);
                             return;
                         }
-                        console.log(`Geometry: Loading mesh from "${meshSrc}"...`);
+
                         this[GEOMETRY_LOADING_KEY] = true; // Set loading flag
+
                         try {
-                            // Pass empty rootUrl and full src as filename for SceneLoader
-                            const rootUrl = "";
-                            const filename = meshSrc; // Use the full URL including query params
+                            if (meshSrc.startsWith('#')) {
+                                // --- Load from Asset Manager ---
+                                const assetId = meshSrc; // Keep the '#' for clarity if needed, or strip it
+                                console.log(`Geometry: Attempting to get preloaded mesh asset "${assetId}"...`);
 
-                            console.log(`Geometry: Attempting to load mesh with rootUrl: "${rootUrl}", filename: "${filename}"`);
+                                if (!this.sceneElement?.assetManager) {
+                                    console.error(`Geometry: AssetManager not found on scene element for asset "${assetId}".`);
+                                    return; // Exit if no asset manager
+                                }
 
-                            // Use ImportMeshAsync - loads meshes, particle systems, skeletons into the scene
-                            // Signature: ImportMeshAsync(meshNames, rootUrl, sceneFilename, scene, onProgress, pluginExtension)
-                            // Explicitly provide the .glb extension
-                            const result = await SceneLoader.ImportMeshAsync(null, rootUrl, filename, scene, undefined, ".glb");
-                            console.log(`Geometry: Successfully loaded mesh from "${meshSrc}"`);
+                                // Wait for assets defined in <bml-assets> to finish loading
+                                await this.sceneElement.waitForAssets();
 
-                            // Find the root node (often __root__ or the first mesh if only one)
-                            const rootMesh = result.meshes.find(m => m.name === "__root__") || result.meshes[0];
+                                const loadedAssetData = this.sceneElement.assetManager.getAsset(assetId);
 
-                            if (rootMesh) {
-                                rootMesh.name = objectName; // Rename the root for clarity
-                                newObject = rootMesh; // Store the root mesh
-                                // Note: ImportMeshAsync already adds meshes to the scene, but we need to parent the root.
+                                if (loadedAssetData && loadedAssetData.meshes && loadedAssetData.meshes.length > 0) {
+                                    console.log(`Geometry: Found preloaded asset "${assetId}". Instantiating hierarchy...`);
+                                    // Find the original root mesh (often named __root__) from the loaded assets
+                                    const originalRoot = loadedAssetData.meshes.find(m => m.name === '__root__') || loadedAssetData.meshes[0];
+
+                                    if (originalRoot) {
+                                        // Instantiate the hierarchy - this creates new instances of meshes,
+                                        // materials (can be shared), skeletons, and animations.
+                                        // The second argument `true` makes it recursive.
+                                        const instantiatedHierarchy = originalRoot.instantiateHierarchy(null, undefined, (source, clone) => {
+                                            // Optional: Callback to customize cloning if needed
+                                            // console.log(`Cloning ${source.name} to ${clone.name}`);
+                                            clone.name = `${objectName}_${source.name}`; // Give instance a unique name
+                                        });
+
+                                        if (instantiatedHierarchy && instantiatedHierarchy.rootNodes && instantiatedHierarchy.rootNodes.length > 0) {
+                                            // The root of the instantiated hierarchy
+                                            const instantiatedRoot = instantiatedHierarchy.rootNodes[0];
+                                            instantiatedRoot.name = objectName; // Set the main name for our component's reference
+                                            newObject = instantiatedRoot; // This is our new geometry object
+                                            console.log(`Geometry: Successfully instantiated hierarchy for "${assetId}". Root:`, newObject);
+                                            // Parenting happens later after the switch statement
+                                        } else {
+                                             console.error(`Geometry: Failed to instantiate hierarchy for asset "${assetId}".`);
+                                        }
+                                    } else {
+                                        console.error(`Geometry: Could not find a root mesh in the loaded asset data for "${assetId}".`);
+                                    }
+                                } else {
+                                    console.warn(`Geometry: Preloaded asset "${assetId}" not found or has no meshes.`);
+                                }
+
                             } else {
-                                console.warn(`Geometry: No meshes found after loading "${meshSrc}".`);
+                                // --- Load directly using SceneLoader (existing logic) ---
+                                console.log(`Geometry: Loading mesh directly from URL "${meshSrc}"...`);
+                                const rootUrl = ""; // Assuming assets are served relative to the HTML or use absolute URLs
+                                const filename = meshSrc;
+
+                                // Use ImportMeshAsync - loads meshes, particle systems, skeletons into the scene
+                                const result = await SceneLoader.ImportMeshAsync(null, rootUrl, filename, scene, undefined, ".glb"); // Assuming GLB, adjust if needed
+                                console.log(`Geometry: Successfully loaded mesh directly from "${meshSrc}"`);
+
+                                // Find the root node
+                                const rootMesh = result.meshes.find(m => m.name === "__root__") || result.meshes[0];
+
+                                if (rootMesh) {
+                                    rootMesh.name = objectName; // Rename the root
+                                    newObject = rootMesh; // Store the root mesh
+                                    // Note: ImportMeshAsync already adds meshes to the scene, parenting happens later
+                                } else {
+                                    console.warn(`Geometry: No meshes found after loading "${meshSrc}".`);
+                                }
                             }
                         } catch (error) {
-                            console.error(`Geometry: Error loading mesh from "${meshSrc}":`, error);
+                            console.error(`Geometry: Error processing mesh source "${meshSrc}":`, error);
                         } finally {
                             this[GEOMETRY_LOADING_KEY] = false; // Clear loading flag
                         }
@@ -229,10 +288,10 @@ export default function registerGeometryComponent(ComponentManager) {
                          console.warn(`Geometry: Created/loaded object is not a recognized mesh or dome type.`, newObject);
                     }
 
-                    if (meshToParent && this.babylonNode) {
+                    if (meshToParent && this.el.babylonNode) {
                          // Make the new mesh/dome a child of the entity's main Babylon node (usually a TransformNode).
-                         meshToParent.parent = this.babylonNode;
-                    } else if (!this.babylonNode) {
+                         meshToParent.parent = this.el.babylonNode;
+                    } else if (!this.el.babylonNode) {
                         console.warn("Geometry: Cannot parent mesh, entity's babylonNode is not available yet.");
                     }
 
@@ -240,25 +299,16 @@ export default function registerGeometryComponent(ComponentManager) {
                     this[GEOMETRY_OBJECT_KEY] = newObject;
                     console.log(`Geometry: Stored internal reference for ${objectName}. newObject:`, newObject); // Log stored object
 
-                    // Expose the created object on the DOM element for external access
-                    // Use `this` because ComponentManager calls methods with the element as `this`
-                    console.log(`Geometry: Checking 'this' (element) before dispatch for ${objectName}. Element:`, this); // Log element check
-                    if (this) { // `this` should be the <bml-entity> element
-                        console.log(`Geometry: Setting BabylonGeometryObject on element for ${objectName}.`);
-                        this.BabylonGeometryObject = newObject; // Set property directly on the element
-                        // Dispatch a ready event on the element once the object is set
-                        console.log(`Geometry: Attempting to dispatch 'bml-geometry-ready' for ${objectName}...`);
-                        this.dispatchEvent(new CustomEvent('bml-geometry-ready', {
-                            detail: { geometryObject: newObject },
-                            bubbles: false // Keep it contained to the element
-                        }));
-                        console.log(`Geometry: Successfully dispatched 'bml-geometry-ready' for ${objectName} on element`, this);
+                    // Expose the created mesh directly on the entity element for other components to find
+                    if (this.el && meshToParent) {
+                        this.el.geometryMesh = meshToParent;
+                        console.log(`%cGeometry: Set 'geometryMesh' property on element ${this.el.id}. Mesh:`, 'color: blue; font-weight: bold;', this.el.geometryMesh);
                     } else {
-                        console.warn(`Geometry: Could not dispatch 'bml-geometry-ready' for ${objectName}, 'this' (the element) was not found.`);
+                         console.warn(`%cGeometry: Could not set 'geometryMesh' property for ${objectName}, element or meshToParent missing.`, 'color: orange;');
                     }
-                    console.log(`Geometry: Finished processing block for ${objectName}.`); // Log end of block
+                    // REMOVED event dispatch logic
 
-                    // Apply initial material? The material component should handle this via the ComponentManager.
+                    console.log(`Geometry: Finished processing block for ${objectName}.`); // Log end of block
                 } else if (geometryType === 'mesh' && this[GEOMETRY_LOADING_KEY]) {
                     // Mesh is loading asynchronously, parenting will happen in the callback
                     console.log(`Geometry: Mesh "${objectName}" is loading asynchronously...`);
@@ -284,11 +334,13 @@ export default function registerGeometryComponent(ComponentManager) {
                 currentObject.dispose();
             }
             this[GEOMETRY_OBJECT_KEY] = null; // Clear the internal reference
-            // Clear the exposed property on the DOM element
-            // Use `this` again, as remove() is also called with the element as `this`
-            if (this) {
-                this.BabylonGeometryObject = null;
+
+            // Clear the exposed mesh property on the DOM element when component is removed
+            if (this.el && this.el.geometryMesh) {
+                 console.log(`%cGeometry: Clearing 'geometryMesh' property on element ${this.el.id}.`, 'color: blue;');
+                this.el.geometryMesh = null;
             }
+
             this[GEOMETRY_LOADING_KEY] = false; // Ensure loading flag is reset
         }
     });

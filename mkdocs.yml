@@ -20,6 +20,9 @@ nav:
     - Geometry: components/geometry.md
     - Material: components/material.md
     - Camera: components/camera.md
+    - Light: components/light.md # Added Light component
+    - Animation: components/animation.md # Added Animation component
+    - Sound: components/sound.md # Added Sound component
   - Live Examples: examples.md
 
 # Theme configuration (using the default 'mkdocs' theme for now)

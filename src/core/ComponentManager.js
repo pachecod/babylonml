@@ -137,9 +137,11 @@ export const ComponentManager = {
         // Store instance reference on the entity
         entityElement._registerAttachedComponent(attributeName, instance);
 
-        // Call component's init() method (if defined) - `this` inside init refers to entityElement
+        // Call component's init() method (if defined)
+        // Set `this` context to the component instance object itself.
+        // Pass the parsed data as the argument.
         try {
-            definition.init?.call(entityElement, instance.data);
+            definition.init?.call(instance, instance.data);
         } catch (e) {
              console.error(`Error in component "${attributeName}" init() method:`, e);
         }
@@ -147,7 +149,8 @@ export const ComponentManager = {
         // Call component's update() method for the initial state (if defined)
         try {
             // Pass the PARSED DATA itself, and undefined for oldData on initial update
-            definition.update?.call(entityElement, instance.data, undefined);
+            // Set `this` context to the instance for update as well.
+            definition.update?.call(instance, instance.data, undefined);
         } catch (e) {
              console.error(`Error in component "${attributeName}" initial update() method:`, e);
         }
@@ -198,11 +201,13 @@ export const ComponentManager = {
                 };
                  entityElement._registerAttachedComponent(attributeName, instance);
                  try {
-                    definition.init?.call(entityElement, instance.data);
+                    // Set `this` context to the instance and pass data.
+                    definition.init?.call(instance, instance.data);
                  } catch (e) { console.error(`Error in component "${attributeName}" init():`, e); }
                  try {
                     // Pass the PARSED DATA, and undefined oldData for initial update after init
-                    definition.update?.call(entityElement, instance.data, undefined);
+                    // Set `this` context to the instance for update as well.
+                    definition.update?.call(instance, instance.data, undefined);
                  } catch (e) { console.error(`Error in component "${attributeName}" update():`, e); }
 
             } else {
@@ -221,9 +226,10 @@ export const ComponentManager = {
                 componentInstance._rawData = newValue;
 
                 // Call component's update() method (if defined)
+                // Set `this` context to the instance.
                 try {
                     // Pass the updated PARSED DATA and the old parsed data
-                    definition.update?.call(entityElement, componentInstance.data, oldParsedData);
+                    definition.update?.call(componentInstance, componentInstance.data, oldParsedData);
                 } catch (e) {
                      console.error(`Error in component "${attributeName}" update() method:`, e);
                 }
@@ -245,8 +251,9 @@ export const ComponentManager = {
 
         const definition = componentInstance.definition;
         // Call component's remove() method (if defined)
+        // Set `this` context to the instance.
         try {
-            definition.remove?.call(entityElement, componentInstance.data);
+            definition.remove?.call(componentInstance, componentInstance.data);
         } catch (e) {
              console.error(`Error in component "${componentName}" remove() method:`, e);
         }

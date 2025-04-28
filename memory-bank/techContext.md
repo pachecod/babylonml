@@ -12,8 +12,8 @@
 -   **Package Manager:** npm (indicated by `package.json` and `package-lock.json`).
 -   **Module Bundler:** Rollup (indicated by `rollup.config.js`). Used to bundle the source files (`src/`) into a distributable format (likely UMD or ES module).
 -   **Dependencies:**
-    -   `babylonjs`: The core dependency. Version should be checked in `package.json`.
-    -   Development dependencies likely include Rollup plugins (`@rollup/plugin-node-resolve`, `@rollup/plugin-commonjs`, etc.) and potentially a local development server.
+    -   `@babylonjs/core`, `@babylonjs/inspector`, `@babylonjs/loaders`: Core Babylon.js dependencies (check `package.json` for versions).
+    -   Development dependencies include Rollup plugins (`@rollup/plugin-node-resolve`, `@rollup/plugin-commonjs`, `rollup-plugin-terser`) and potentially a local development server.
 -   **Source Code Structure:**
     -   `src/core`: Core framework classes (Scene, Entity, ComponentManager).
     -   `src/components`: Individual component implementations.
@@ -27,7 +27,7 @@
 -   **Browser Compatibility:** Dependent on Babylon.js compatibility and the use of modern JavaScript features (ES6+). Polyfills might be needed for older browsers.
 -   **Performance:** Parsing HTML and managing components adds overhead compared to direct Babylon.js usage. Performance optimization might be necessary for complex scenes. The efficiency of DOM observation and component updates is crucial.
 -   **Asynchronous Operations:** Loading external assets (textures, models) is asynchronous and needs careful handling within the component lifecycle.
--   **Build Process:** The Rollup configuration defines how the library is built and what formats are outputted.
+-   **Build Process:** The Rollup configuration (`rollup.config.js`) defines how the library is built (UMD/IIFE format). **Crucially, `@babylonjs/core` is now bundled *into* the output files (`dist/babylonml.js`, `dist/babylonml.min.js`) rather than being treated as an external dependency.** This increases bundle size but resolves potential issues with accessing the `BABYLON` global, especially for internal library features like `GreasedLineMesh`.
 
 ## Tool Usage Patterns
 

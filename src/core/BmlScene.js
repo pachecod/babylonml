@@ -2,10 +2,13 @@
 
 // Import necessary Babylon.js classes (again, explicit imports)
 import { Engine, Scene, HemisphericLight, Vector3, FreeCamera, Color3, WebXRDefaultExperience } from '@babylonjs/core';
-import '@babylonjs/inspector'; // Import the inspector side effect
+// Inspector is now dynamically imported
 
 // Import the central brain for components
 import { ComponentManager } from './ComponentManager.js';
+// Import Asset Management related classes
+import { AssetManager } from './AssetManager.js';
+import './BmlAssets.js'; // Import side effect to define <bml-assets> and <bml-asset-item>
 
 export class BmlScene extends HTMLElement {
 
@@ -18,6 +21,11 @@ export class BmlScene extends HTMLElement {
     #isReady = false; // Flag to indicate scene setup completion
     #xrHelper = null; // Instance of WebXRDefaultExperience
     #inspectorKeyDownHandler = null; // Handler for inspector toggle
+    #inspectorLoaded = false; // Flag to track if inspector has been loaded
+    #assetLoadingPromise = Promise.resolve(); // Promise that resolves when assets are loaded
+
+    // Public properties
+    assetManager = null; // Instance of AssetManager
 
     constructor() {
         super(); // Always call super() first in constructor for HTMLElement subclasses
@@ -72,21 +80,37 @@ export class BmlScene extends HTMLElement {
         // An alternative is using events or a registry.
         this.babylonScene = this.#scene;
         this.babylonEngine = this.#engine; // Expose engine too?
+        this.assetManager = new AssetManager(this.#scene); // Create Asset Manager
+        console.log('<bml-scene>: AssetManager created.');
 
         // --- Inspector Toggle Setup ---
-        this.#inspectorKeyDownHandler = (event) => {
+        this.#inspectorKeyDownHandler = async (event) => { // Make handler async
             // Check for CTRL+I (keyCode 73 for 'I')
             if (event.ctrlKey && event.keyCode === 73) {
-                if (this.#scene.debugLayer.isVisible()) {
+                if (this.#scene?.debugLayer.isVisible()) {
                     this.#scene.debugLayer.hide();
-                } else {
-                    this.#scene.debugLayer.show({ embedMode: false }); // embedMode recommended
+                } else if (this.#scene) {
+                    if (!this.#inspectorLoaded) {
+                        try {
+                            console.log('<bml-scene>: Loading Inspector...');
+                            await import('@babylonjs/inspector');
+                            this.#inspectorLoaded = true;
+                            console.log('<bml-scene>: Inspector loaded successfully.');
+                            // Show inspector after loading
+                            this.#scene.debugLayer.show({ embedMode: true }); // Use embedMode
+                        } catch (error) {
+                            console.error('<bml-scene>: Failed to load Babylon.js Inspector:', error);
+                        }
+                    } else {
+                        // Inspector already loaded, just show it
+                        this.#scene.debugLayer.show({ embedMode: true }); // Use embedMode
+                    }
                 }
             }
         };
         // Attach listener to the window or a specific element if preferred
         window.addEventListener('keydown', this.#inspectorKeyDownHandler);
-        console.log('<bml-scene>: Inspector toggle (CTRL+I) enabled.');
+        console.log('<bml-scene>: Inspector toggle (CTRL+I) listener attached.');
 
         // --- 3. Default Setup (Camera & Light) ---
         // Check if the user has explicitly added a camera or light element.
@@ -282,6 +306,29 @@ export class BmlScene extends HTMLElement {
                 }
             }
         }
+    }
+
+    /**
+     * Called by the BmlAssets element when it's connected and ready.
+     * Initiates the preloading of assets defined within it.
+     * @param {HTMLElement} bmlAssetsElement - The <bml-assets> element instance.
+     */
+    signalAssetsElementReady(bmlAssetsElement) {
+        console.log('<bml-scene>: <bml-assets> element signaled ready. Starting asset preload.');
+        // Store the promise returned by preloadAssets
+        this.#assetLoadingPromise = this.assetManager.preloadAssets();
+    }
+
+    /**
+     * Returns a promise that resolves when all assets managed by the AssetManager
+     * have finished loading (or immediately if no assets were registered or loading started).
+     * Components should await this before trying to access assets via getAsset.
+     * @returns {Promise<void>}
+     */
+    async waitForAssets() {
+        // Return the stored promise. It's initialized to Promise.resolve(),
+        // and gets replaced by the actual loading promise when signalAssetsElementReady is called.
+        return this.#assetLoadingPromise;
     }
 
     // --- Helper Methods (Optional) ---

@@ -14,9 +14,10 @@ export default function registerPositionComponent(ComponentManager) {
         // Optional: init() - Called once when the component is first attached.
         // Often not needed for simple property components if 'update' handles initial state.
         // init(data) {
-        //    console.log('Position component initialized with data:', data, 'on element:', this);
-        //    // 'this' inside lifecycle methods refers to the BmlEntity HTML element
-        //    // 'this.babylonNode' gives access to the Babylon.js node
+        //    console.log('Position component initialized with data:', data, 'on element:', this.el);
+        //    // 'this' inside lifecycle methods refers to the component instance object.
+        //    // Access the BmlEntity element via 'this.el'.
+        //    // Access the Babylon.js node via 'this.el.babylonNode'.
         // },
 
         // update() - Called on initialization *after* init(), and whenever the attribute changes.
@@ -25,23 +26,23 @@ export default function registerPositionComponent(ComponentManager) {
             // 'oldData' is the previously parsed data object (or undefined on first update)
             // console.log('Updating position to:', data, 'from:', oldData);
 
-            if (this.babylonNode) { // Ensure the Babylon.js node exists
+            if (this.el.babylonNode) { // Ensure the Babylon.js node exists via the element
                 // Update the position of the underlying Babylon.js TransformNode/Mesh
                 // Always create a new Vector3 or use .copyFrom() to avoid reference issues
                 // if the parser reuses objects.
                 // Ensure Parsers.vec3ToObject exists and correctly converts the object format
                 if (Parsers.vec3ToObject) {
-                    this.babylonNode.position.copyFrom(Parsers.vec3ToObject(data));
+                    this.el.babylonNode.position.copyFrom(Parsers.vec3ToObject(data));
                 } else {
                      // Fallback or direct assignment if vec3ToObject is not defined yet
                      // This assumes 'data' is already in {x, y, z} format from the parser
-                     this.babylonNode.position.x = data.x;
-                     this.babylonNode.position.y = data.y;
-                     this.babylonNode.position.z = data.z;
+                     this.el.babylonNode.position.x = data.x;
+                     this.el.babylonNode.position.y = data.y;
+                     this.el.babylonNode.position.z = data.z;
                      console.warn("Parsers.vec3ToObject not found, assigning position components directly.");
                 }
             } else {
-                console.warn("Position component update called before babylonNode was ready on", this);
+                console.warn("Position component update called before babylonNode was ready on", this.el);
             }
         },
 

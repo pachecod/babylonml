@@ -37,6 +37,11 @@ export class BmlEntity extends HTMLElement {
         return this.#babylonNode;
     }
 
+    // Public getter for the cached scene element reference
+    get cachedSceneElement() {
+        return this.#sceneElement;
+    }
+
     // Setter might be needed if components replace the node (e.g., geometry creating a Mesh)
     set babylonNode(node) {
         if (this.#babylonNode && this.#babylonNode !== node) {

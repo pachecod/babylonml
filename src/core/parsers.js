@@ -1,5 +1,19 @@
 // src/core/parsers.js
-import { Vector3, Color3 } from '@babylonjs/core';
+import { Vector3, Color3 } from '@babylonjs/core'; // Keep Color3 import for potential future use or type hints
+
+// Basic color name lookup
+const COLOR_NAME_MAP = {
+    white: { r: 1, g: 1, b: 1 }, black: { r: 0, g: 0, b: 0 },
+    red: { r: 1, g: 0, b: 0 }, green: { r: 0, g: 1, b: 0 }, blue: { r: 0, g: 0, b: 1 },
+    yellow: { r: 1, g: 1, b: 0 }, cyan: { r: 0, g: 1, b: 1 }, magenta: { r: 1, g: 0, b: 1 },
+    gray: { r: 0.5, g: 0.5, b: 0.5 }, silver: { r: 0.75, g: 0.75, b: 0.75 },
+    orange: { r: 1, g: 0.647, b: 0 }, purple: { r: 0.5, g: 0, b: 0.5 }, brown: { r: 0.647, g: 0.165, b: 0.165 },
+    lime: { r: 0, g: 1, b: 0 }, // Added lime
+    dodgerblue: { r: 0.118, g: 0.565, b: 1 }, // Added dodgerblue
+    limegreen: { r: 0.196, g: 0.804, b: 0.196 } // Added limegreen
+    // Add more as needed
+};
+
 
 /**
  * Parses a string like "x y z" into a {x, y, z} object.
@@ -36,25 +50,54 @@ export function vec3ToObject(obj) {
 
 
 /**
- * Parses a color string (e.g., "#RRGGBB", "rgb(r,g,b)", "colorname") into a {r, g, b} object (0-1 range).
+ * Parses a color string (e.g., "#RRGGBB", "#RGB", "colorname") into a {r, g, b} object (0-1 range).
  * @param {string} str - The input color string.
  * @param {object} [defaultValue={r:1, g:1, b:1}] - Default value (white).
  * @returns {object} Parsed color object {r, g, b}.
  */
 export function parseColor(str, defaultValue = { r: 1, g: 1, b: 1 }) {
-     if (typeof str !== 'string') return defaultValue;
-     try {
-         // Use Babylon's Color3.FromString to handle various formats
-         const color = Color3.FromString(str.trim());
-         return { r: color.r, g: color.g, b: color.b };
-     } catch (e) {
-         console.warn(`Could not parse color string "${str}". Using default.`, e);
-         // Convert default object back to Color3 if needed, or just return the default object
-         if (defaultValue instanceof Color3) {
-             return { r: defaultValue.r, g: defaultValue.g, b: defaultValue.b };
-         }
-         return defaultValue;
+    if (typeof str !== 'string') return defaultValue;
+    str = str.trim().toLowerCase();
+
+    // Handle color names
+    if (COLOR_NAME_MAP[str]) {
+        return { ...COLOR_NAME_MAP[str] }; // Return a copy
+    }
+
+    // Handle hex codes (#RRGGBB or #RGB)
+    if (str.startsWith('#')) {
+        let hex = str.substring(1);
+        let r = 0, g = 0, b = 0;
+
+        if (hex.length === 6) {
+            r = parseInt(hex.substring(0, 2), 16);
+            g = parseInt(hex.substring(2, 4), 16);
+            b = parseInt(hex.substring(4, 6), 16);
+        } else if (hex.length === 3) {
+            r = parseInt(hex.substring(0, 1) + hex.substring(0, 1), 16);
+            g = parseInt(hex.substring(1, 2) + hex.substring(1, 2), 16);
+            b = parseInt(hex.substring(2, 3) + hex.substring(2, 3), 16);
+        } else {
+            console.warn(`Could not parse hex color string "${str}". Invalid length.`);
+            return defaultValue;
+        }
+
+        if (!isNaN(r) && !isNaN(g) && !isNaN(b)) {
+            return { r: r / 255, g: g / 255, b: b / 255 };
+        }
+    }
+
+     // Handle "r g b" format (numbers between 0-1) - Added based on logs
+     const parts = str.split(/\s+/).map(Number);
+     if (parts.length === 3 && parts.every(n => !isNaN(n) && n >= 0 && n <= 1)) {
+         return { r: parts[0], g: parts[1], b: parts[2] };
      }
+
+
+    // TODO: Handle rgb(r,g,b) format if needed
+
+    console.warn(`Could not parse color string "${str}". Using default.`);
+    return defaultValue;
 }
 
 /**
@@ -77,6 +120,20 @@ export function parseNumber(str, defaultValue = 0) {
  */
 export function parseString(str, defaultValue = '') {
     return (typeof str === 'string' && str.length > 0) ? str : defaultValue;
+}
+
+/**
+ * Parses a string into a float, returning null if parsing fails or input is invalid.
+ * @param {*} value - The input value to parse.
+ * @param {number|null} [defaultValue=null] - The default value to return on failure.
+ * @returns {number|null} The parsed float or the default value.
+ */
+export function parseFloatOrNull(value, defaultValue = null) {
+    if (value === null || value === undefined || value === '') {
+        return defaultValue;
+    }
+    const num = parseFloat(value);
+    return isNaN(num) ? defaultValue : num;
 }
 
 /**
@@ -158,10 +215,34 @@ export function parseComponentString(value, schema) {
     const parsedData = {};
     const props = parseObjectString(value, {}); // First parse into key-value strings
 
-    // Apply defaults first
+    // Apply defaults first, parsing them according to their schema type
     for (const key in schema) {
-        if (schema[key].default !== undefined) {
-            parsedData[key] = schema[key].default;
+        const propSchema = schema[key];
+        if (propSchema.default !== undefined) {
+            // Parse the default value based on its type
+            switch (propSchema.type) {
+                case 'vec3':
+                    // Ensure default is parsed, even if it's already an object (idempotent)
+                    parsedData[key] = parseVec3(propSchema.default, propSchema.default);
+                    break;
+                case 'color':
+                    parsedData[key] = parseColor(propSchema.default, propSchema.default);
+                    break;
+                case 'number':
+                    parsedData[key] = parseNumber(propSchema.default, propSchema.default);
+                    break;
+                case 'string':
+                    parsedData[key] = parseString(propSchema.default, propSchema.default);
+                    break;
+                case 'boolean':
+                    parsedData[key] = parseBoolean(propSchema.default, propSchema.default);
+                    break;
+                // Add other types as needed
+                default:
+                    // For unknown types or types without specific parsers (like 'map'),
+                    // assign the default value directly. 'map' type defaults are usually {}
+                    parsedData[key] = propSchema.default;
+            }
         }
     }
 

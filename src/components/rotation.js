@@ -15,10 +15,10 @@ export default function registerRotationComponent(ComponentManager) {
             // 'data' is the parsed rotation in degrees {x, y, z}
             // console.log('Updating rotation to (degrees):', data);
 
-            if (this.babylonNode) { // Ensure the Babylon.js node exists
+            if (this.el.babylonNode) { // Ensure the Babylon.js node exists via the element
                 // Convert degrees to radians for Babylon.js
                 // Option 1: If babylonNode has rotationQuaternion (preferred for avoiding gimbal lock)
-                if (this.babylonNode.rotationQuaternion) {
+                if (this.el.babylonNode.rotationQuaternion) {
                     // Note: Setting Euler angles directly can lead to gimbal lock.
                     // It's often better to work with Quaternions, but direct Euler angles are simpler for users.
                     // We convert the Euler angles (degrees) to a Quaternion.
@@ -28,24 +28,24 @@ export default function registerRotationComponent(ComponentManager) {
                         z: Angle.FromDegrees(data.z).radians()
                     };
                     // This creates a new Quaternion from Euler angles (YXZ order is common)
-                    this.babylonNode.rotationQuaternion = Quaternion.RotationYawPitchRoll(
+                    this.el.babylonNode.rotationQuaternion = Quaternion.RotationYawPitchRoll(
                         rotationRadians.y,
                         rotationRadians.x,
                         rotationRadians.z
                     );
-                     // console.log('Applied rotation as Quaternion:', this.babylonNode.rotationQuaternion);
+                     // console.log('Applied rotation as Quaternion:', this.el.babylonNode.rotationQuaternion);
 
                 } else {
                      // Option 2: Fallback to .rotation if rotationQuaternion doesn't exist (less common for TransformNode/Mesh)
                      // Directly set Euler angles in radians.
-                    this.babylonNode.rotation.x = Angle.FromDegrees(data.x).radians();
-                    this.babylonNode.rotation.y = Angle.FromDegrees(data.y).radians();
-                    this.babylonNode.rotation.z = Angle.FromDegrees(data.z).radians();
-                    // console.log('Applied rotation as Euler radians:', this.babylonNode.rotation);
+                    this.el.babylonNode.rotation.x = Angle.FromDegrees(data.x).radians();
+                    this.el.babylonNode.rotation.y = Angle.FromDegrees(data.y).radians();
+                    this.el.babylonNode.rotation.z = Angle.FromDegrees(data.z).radians();
+                    // console.log('Applied rotation as Euler radians:', this.el.babylonNode.rotation);
                 }
 
             } else {
-                console.warn("Rotation component update called before babylonNode was ready on", this);
+                console.warn("Rotation component update called before babylonNode was ready on", this.el);
             }
         },
 
