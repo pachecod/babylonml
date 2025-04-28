@@ -14,6 +14,7 @@ export class BmlScene extends HTMLElement {
     #canvas = null;
     #observer = null; // Instance of MutationObserver
     #resizeObserver = null; // To handle canvas resizing
+    #isReady = false; // Flag to indicate scene setup completion
 
     constructor() {
         super(); // Always call super() first in constructor for HTMLElement subclasses
@@ -124,7 +125,9 @@ export class BmlScene extends HTMLElement {
             // their own `connectedCallback` should handle this naturally.
             // ComponentManager.initializeEntity(entity); // Example if needed
         });
-         // Trigger an event indicating the scene is ready
+
+        // --- 8. Mark as Ready and Dispatch Event ---
+        this.#isReady = true; // Set ready flag
         this.dispatchEvent(new CustomEvent('bml-scene-ready', { detail: { scene: this.#scene, engine: this.#engine } }));
         console.log("<bml-scene>: Initialization complete. 'bml-scene-ready' event dispatched.");
     }
@@ -176,6 +179,7 @@ export class BmlScene extends HTMLElement {
              // this.#canvas.remove(); // Removing child might trigger observers unnecessarily if not disconnected first. Better to let GC handle it.
         }
         this.#canvas = null;
+        this.#isReady = false; // Reset ready flag
 
          console.log('<bml-scene>: Cleanup complete.');
     }
@@ -243,5 +247,15 @@ export class BmlScene extends HTMLElement {
 
     getEngine() {
         return this.#engine;
+    }
+
+    /** Public getter for the ready state */
+    get isReady() {
+        return this.#isReady;
+    }
+
+    /** Public getter for the canvas element */
+    get babylonCanvas() {
+        return this.#canvas;
     }
 }

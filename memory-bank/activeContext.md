@@ -2,11 +2,17 @@
 
 ## Current Focus
 
-The immediate goal is to extend the BabylonML framework to support loading custom 3D models, 360 photos, and 360 videos.
+Implementing and verifying the `camera` component to allow declarative camera definition and control within BabylonML scenes. Addressing the issue where a default camera was overriding the user-defined camera in `examples/mesh_example.html`.
 
-## Task Breakdown (Geometry Component Updated)
+## Task Breakdown (Camera Component Added)
 
-1.  **Custom Mesh Loading:** **DONE**
+1.  **Camera Component Implementation:** **DONE**
+    *   Created `src/components/camera.js` with logic for `arcRotate` and `universal` types.
+    *   Implemented logic to set the first camera component as `scene.activeCamera`.
+    *   Added `registerCameraComponent` function.
+    *   Registered component in `src/components/registerCoreComponents.js`.
+    *   Created documentation `docs/components/camera.md`.
+2.  **Custom Mesh Loading:** **DONE**
     *   Modified `geometry` component (`src/components/geometry.js`) to handle `type: 'mesh'`.
     *   Added `src` attribute parsing.
     *   Integrated `SceneLoader.ImportMeshAsync`.
@@ -26,17 +32,17 @@ The immediate goal is to extend the BabylonML framework to support loading custo
 
 ## Next Steps
 
-1.  Update `memory-bank/progress.md` to reflect completed work.
-2.  Create example HTML files in `examples/` demonstrating:
-    *   Loading a `.glb` mesh.
-    *   Using `<bml-entity geometry="type: photodome; ...">`.
-    *   Using `<bml-entity geometry="type: videodome; ...">`.
-3.  Run the build process (`npm run build`) to ensure the changes are bundled correctly.
+1.  Update `memory-bank/progress.md` to reflect the addition of the `camera` component.
+2.  Run the build process (`npm run build`) to ensure the changes are bundled correctly.
+3.  Verify `examples/mesh_example.html` uses the `ArcRotateCamera` as intended.
 4.  Update `README.md` if necessary.
 5.  Update `package.json` version if appropriate.
+6.  **(DONE)** Create examples for `mesh`, `photodome`, `videodome`.
 
 ## Active Decisions/Considerations
 
--   Should mesh/photodome/videodome be new geometry *types* within the existing `geometry` component, or should they be entirely new components or primitives (e.g., `<bml-mesh>`, `<bml-photodome>`)? Using the `geometry` component seems more consistent with the current structure (box, sphere, etc.), but primitives might be more declarative. Leaning towards extending the `geometry` component for now.
--   How to handle potential loading errors for external assets (meshes, images, videos)? Need error handling and potentially fallback mechanisms or clear console warnings.
--   Ensure asynchronous loading is handled correctly within the framework's lifecycle.
+-   **Camera Activation:** The first camera component initialized is set as active. Need to consider behavior if multiple cameras are defined or if the active one is removed dynamically. **Status: Basic 'first-one-wins' logic implemented.**
+-   **Camera Updates:** The current `update` logic disposes and recreates the camera. A more refined approach would update properties on the existing camera instance where possible. **Status: Basic recreate logic implemented.**
+-   **Geometry Component Decision:** Extended the existing `geometry` component for `mesh`, `photodome`, `videodome`. **Decision Implemented.**
+-   **Asset Loading Errors:** Need robust error handling for external assets. **Status: Basic console logging implemented.**
+-   **Async Loading:** Ensure correct handling within lifecycle. **Status: Implemented for mesh loading.**

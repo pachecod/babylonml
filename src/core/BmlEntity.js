@@ -5,10 +5,12 @@ import { ComponentManager } from './ComponentManager.js';
 
 export class BmlEntity extends HTMLElement {
 
-    #babylonNode = null;    // Reference to the corresponding Babylon.js TransformNode (or Mesh sometimes)
+    #babylonNode = null; // Reference to the corresponding Babylon.js TransformNode (or Mesh sometimes)
     #attachedComponents = {}; // Keep track of component instances attached to this entity
+    #sceneElement = null; // Cache the scene element
+    #sceneReadyListener = null; // Store the event listener function for removal
 
-    // Flag to prevent processing attributes before the node is ready/attached
+    // Flag to prevent processing attributes before the node AND scene are ready
     #isReady = false;
 
     constructor() {
@@ -56,17 +58,67 @@ export class BmlEntity extends HTMLElement {
         // console.log(`<${this.tagName.toLowerCase()}>: Connected to DOM`, this);
 
         // --- 1. Find Parent Scene/Entity and Babylon Scene ---
-        const parentElement = this.parentElement?.closest('bml-entity, bml-scene');
-        const sceneElement = this.sceneElement;
-
-        if (!sceneElement || !sceneElement.babylonScene) {
-            console.error(`<${this.tagName.toLowerCase()}> must be a descendant of a <bml-scene> which is ready.`, this);
-            return; // Cannot initialize without a scene
+        this.#sceneElement = this.sceneElement; // Cache scene element
+        if (!this.#sceneElement) {
+            console.error(`<${this.tagName.toLowerCase()}> must be a descendant of a <bml-scene>.`, this);
+            return;
         }
-        const babylonScene = sceneElement.babylonScene;
 
-         // Determine the Babylon.js parent node
-         let babylonParentNode = null; // Default to null (attach to scene root)
+        // Check if scene is ready *before* accessing babylonScene property
+        if (!this.#sceneElement.isReady) {
+             // Scene not ready yet, wait for the event
+             console.log(`<${this.tagName.toLowerCase()}>: Scene not ready, waiting for bml-scene-ready event.`);
+             this.#sceneReadyListener = this._onSceneReady.bind(this); // Bind 'this'
+             this.#sceneElement.addEventListener('bml-scene-ready', this.#sceneReadyListener);
+             // Don't proceed with Babylon node creation until scene is ready
+             return;
+        }
+
+        // Scene is already ready, proceed with initialization immediately
+        this._initializeBabylonNode();
+    }
+
+    /**
+     * =========================================================================
+     * Scene Ready Event Handler
+     * =========================================================================
+     * Called when the parent <bml-scene> dispatches 'bml-scene-ready'.
+     */
+    _onSceneReady() {
+        console.log(`<${this.tagName.toLowerCase()}>: Received bml-scene-ready event.`);
+        // Clean up the listener immediately
+        if (this.#sceneElement && this.#sceneReadyListener) {
+            this.#sceneElement.removeEventListener('bml-scene-ready', this.#sceneReadyListener);
+            this.#sceneReadyListener = null;
+        }
+        // Now that the scene is ready, create the Babylon node and components
+        this._initializeBabylonNode();
+    }
+
+
+    /**
+     * =========================================================================
+     * Initialize Babylon Node and Components
+     * =========================================================================
+     * Creates the Babylon.js node, attaches it, and initializes components.
+     * Called either directly from connectedCallback (if scene was already ready)
+     * or from the bml-scene-ready event handler.
+     */
+    _initializeBabylonNode() {
+        if (this.#babylonNode) {
+             console.warn(`<${this.tagName.toLowerCase()}>: Attempted to initialize Babylon node more than once.`);
+             return; // Already initialized
+        }
+        if (!this.#sceneElement || !this.#sceneElement.babylonScene) {
+             console.error(`<${this.tagName.toLowerCase()}>: Cannot initialize Babylon node, scene element or Babylon scene not found/ready.`);
+             return;
+        }
+
+        const babylonScene = this.#sceneElement.babylonScene;
+        const parentElement = this.parentElement?.closest('bml-entity, bml-scene');
+
+        // Determine the Babylon.js parent node
+        let babylonParentNode = null; // Default to null (attach to scene root)
          if (parentElement && parentElement.tagName.toLowerCase() === 'bml-entity') {
              // Wait for parent entity's node to be ready? Might need async/event handling
             // For simplicity, assume parent's connectedCallback ran first or access its node directly
@@ -96,17 +148,32 @@ export class BmlEntity extends HTMLElement {
         this.#babylonNode.bmlElement = this;
 
         // --- 4. Initialize Components based on Attributes ---
-        // Now that the node exists, process initial attributes.
+        this._initializeComponents();
+    }
+
+
+    /**
+     * =========================================================================
+     * Initialize Components
+     * =========================================================================
+     * Iterates initial attributes and tells ComponentManager to initialize components.
+     */
+    _initializeComponents() {
+        if (this.#isReady) return; // Prevent double initialization
+
+        // Now that the node exists and scene is ready, process initial attributes.
         this.#isReady = true; // Mark as ready for attributeChangedCallback
-        // Iterate over *all* attributes present on the element when connected.
+
+        // Iterate over *all* attributes present on the element.
         for (let i = 0; i < this.attributes.length; i++) {
             const attr = this.attributes[i];
             // Use the ComponentManager to check if this attribute corresponds to a component
             // and trigger its initialization ('init' and initial 'update').
             ComponentManager.handleAttributeInitialization(this, attr.name, attr.value);
         }
-         console.log(`<${this.tagName.toLowerCase()}>: Connected and initial attributes processed.`);
+        console.log(`<${this.tagName.toLowerCase()}>: Initialized components from attributes.`);
     }
+
 
     /**
      * =========================================================================
@@ -116,7 +183,15 @@ export class BmlEntity extends HTMLElement {
      */
     disconnectedCallback() {
         console.log(`<${this.tagName.toLowerCase()}>: Disconnected from DOM. Cleaning up Babylon node: ${this.#babylonNode?.name}`);
-         this.#isReady = false; // Mark as not ready
+        this.#isReady = false; // Mark as not ready
+
+        // --- 0. Remove Scene Ready Listener (if attached) ---
+        if (this.#sceneElement && this.#sceneReadyListener) {
+            this.#sceneElement.removeEventListener('bml-scene-ready', this.#sceneReadyListener);
+            console.log(`<${this.tagName.toLowerCase()}>: Removed scene ready listener.`);
+            this.#sceneReadyListener = null;
+        }
+        this.#sceneElement = null; // Clear cached scene element
 
         // --- 1. Detach and Remove Components ---
         // Iterate through attached components and call their 'remove' lifecycle method.

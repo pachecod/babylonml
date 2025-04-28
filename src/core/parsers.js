@@ -85,11 +85,20 @@ export function parseString(str, defaultValue = '') {
  * @param {boolean} [defaultValue=false] - Default value.
  * @returns {boolean} Parsed boolean.
  */
-export function parseBoolean(str, defaultValue = false) {
-    if (str === null || str === undefined) return defaultValue; // Attribute not present
-    if (str === '' || str.toLowerCase() === 'true') return true;
-    if (str.toLowerCase() === 'false') return false;
-    return defaultValue; // Should not happen for valid boolean strings
+export function parseBoolean(value, defaultValue = false) {
+    // Handle cases where the value might already be a boolean
+    if (typeof value === 'boolean') {
+        return value;
+    }
+    // Handle string inputs
+    if (value === null || value === undefined) return defaultValue; // Attribute not present or value is null/undefined
+    if (typeof value === 'string') {
+        const strLower = value.toLowerCase();
+        if (value === '' || strLower === 'true') return true; // Empty string attribute usually means true
+        if (strLower === 'false') return false;
+    }
+    // Fallback for other types or unparseable strings
+    return defaultValue;
 }
 
 /**

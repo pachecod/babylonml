@@ -74,8 +74,12 @@ export const ComponentManager = {
         // Object string schema: e.g., { type: 'map', default: {}, parse: Parsers.parseObjectString }
 
         try {
-            // Simplistic example: assume a single 'type' field determines the parser
-            if (schema.type) {
+            // Define known single-value schema types
+            const knownSingleTypes = ['vec3', 'color', 'number', 'string', 'boolean', 'map'];
+
+            // Check if schema.type is a string and matches a known single type
+            if (typeof schema.type === 'string' && knownSingleTypes.includes(schema.type)) {
+                // Handle as single-property schema
                 switch(schema.type) {
                     case 'vec3':    return Parsers.parseVec3(value, schema.default);
                     case 'color':   return Parsers.parseColor(value, schema.default);
@@ -85,16 +89,18 @@ export const ComponentManager = {
                     case 'map':     return Parsers.parseObjectString(value, schema.default); // For "prop: val; prop2: val2"
                     // Add more types: 'asset', 'selector', 'array', etc.
                     default:
-                         console.warn(`ComponentManager: Unknown schema type "${schema.type}" for attribute "${attributeName}".`);
-                         return value; // Return raw value as fallback? Or null?
+                         // This case should ideally not be hit if knownSingleTypes is comprehensive
+                         console.warn(`ComponentManager: Unhandled known single schema type "${schema.type}" for attribute "${attributeName}".`);
+                         return value; // Fallback
                 }
             } else {
-                // If schema is an object of properties (like A-Frame multi-prop)
-                // Requires a parser that handles "prop: val; prop2: val2" syntax
-                return Parsers.parseComponentString(value, schema); // Pass the whole schema object
+                // Assume multi-property schema (like camera) or an unknown/invalid schema structure.
+                // Pass the whole schema object to a parser designed for multi-property strings.
+                // console.log(`ComponentManager: Treating "${attributeName}" as multi-property schema.`);
+                return Parsers.parseComponentString(value, schema);
             }
         } catch (e) {
-            console.error(`ComponentManager: Error parsing attribute "${attributeName}" with value "${value}".`, e);
+            console.error(`ComponentManager: Error parsing attribute "${attributeName}" with value "${value}" using schema:`, schema, e);
             return schema.default !== undefined ? schema.default : null; // Return default on error?
         }
     },
@@ -140,7 +146,7 @@ export const ComponentManager = {
 
         // Call component's update() method for the initial state (if defined)
         try {
-            // Pass parsed data, and undefined for oldData on initial update
+            // Pass the PARSED DATA itself, and undefined for oldData on initial update
             definition.update?.call(entityElement, instance.data, undefined);
         } catch (e) {
              console.error(`Error in component "${attributeName}" initial update() method:`, e);
@@ -195,7 +201,7 @@ export const ComponentManager = {
                     definition.init?.call(entityElement, instance.data);
                  } catch (e) { console.error(`Error in component "${attributeName}" init():`, e); }
                  try {
-                    // Pass undefined oldData for initial update after init
+                    // Pass the PARSED DATA, and undefined oldData for initial update after init
                     definition.update?.call(entityElement, instance.data, undefined);
                  } catch (e) { console.error(`Error in component "${attributeName}" update():`, e); }
 
@@ -216,7 +222,8 @@ export const ComponentManager = {
 
                 // Call component's update() method (if defined)
                 try {
-                    definition.update?.call(entityElement, parsedData, oldParsedData);
+                    // Pass the updated PARSED DATA and the old parsed data
+                    definition.update?.call(entityElement, componentInstance.data, oldParsedData);
                 } catch (e) {
                      console.error(`Error in component "${attributeName}" update() method:`, e);
                 }
