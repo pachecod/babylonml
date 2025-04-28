@@ -117,6 +117,12 @@ Pivoting from documentation updates to implementing new features: an A-Frame-lik
     *   Identified that the initial `update` call within `ComponentManager.js`'s `handleAttributeInitialization` was incorrectly using the `entityElement` as the `this` context, causing `TypeError: this._applyMaterial is not a function` in `material.js`.
     *   Corrected the `call` in `handleAttributeInitialization` to use the `instance` as the `this` context for the initial `update`.
     *   Rebuilt library (`npm run build`).
+23. **NEW:** Fix Material/Geometry Timing (Final Attempt): **DONE**
+    *   Identified that the event-based approach (`bml-geometry-ready`) was still unreliable due to component initialization order.
+    *   Modified `geometry.js` to remove the event dispatch and instead set the created mesh on `this.el.geometryMesh`.
+    *   Modified `material.js` to remove all event listener logic and instead check for the existence of `this.el.geometryMesh` in its `update` method before calling `_applyMaterial`.
+    *   Cleaned up debugging logs from both components.
+    *   Rebuilt library (`npm run build`).
 
 ## Next Steps
 
@@ -155,5 +161,5 @@ Pivoting from documentation updates to implementing new features: an A-Frame-lik
 -   **Build Configuration:** Changed Rollup config to bundle `@babylonjs/core` to resolve potential issues with internal library features (like `GreasedLineMesh`) accessing the global `BABYLON` object when loaded externally. **Status: Implemented & Rebuilt.**
 -   **Material Component Timing:** The `update` method now correctly checks for `this.babylonNode` being an `AbstractMesh` with a `material` property before proceeding, preventing errors when `geometry` hasn't finished initializing. **Status: Implemented & Rebuilt.**
 -   **Light Component Timing:** The `init` and `update` methods now correctly check for `this.babylonNode` and `this.sceneElement?.babylonScene` before proceeding, preventing errors during entity initialization. Internal references were also corrected. **Status: Implemented & Rebuilt.**
--   **Material/Geometry Timing:** The `material` component now correctly waits for the `bml-geometry-ready` event (using a properly bound listener defined inline in `init`) before attempting to apply the material, resolving the timing conflict and the initial `bind` TypeError. **Status: Implemented & Rebuilt.**
+-   **Material/Geometry Timing:** Removed the unreliable event-based approach (`bml-geometry-ready`). The `geometry` component now sets an `el.geometryMesh` property when its mesh is ready. The `material` component checks for this property in its `update` method before attempting to apply the material. This ensures the material is applied only after the mesh exists. **Status: Implemented & Rebuilt.**
 -   **Component Initialization Context:** The `this` context within component lifecycle methods (`init`, `update`, `remove`) is correctly set to the component instance object (which includes `this.el` referencing the entity element), resolving subsequent TypeErrors in `material.js` and `light.js`. **Status: Implemented & Rebuilt.**
