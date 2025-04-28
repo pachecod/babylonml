@@ -73,6 +73,8 @@ sceneEl.addEventListener('bml-scene-ready', (event) => {
 });
 ```
 
+*   **Live Example:** [View Multiple Camera Scene](https://bayblonml-frontend.netlify.app/examples/multi_camera_scene.html)
+
 **Note:** Currently, only the initial properties set via the attribute are used. Dynamically updating the `camera` attribute after the scene loads might not fully reconfigure the camera; it might dispose the old one and create a new one based on the new attribute string.
 
 **Active Camera:** The framework automatically sets the *first* camera component encountered in the DOM as the scene's active camera. If you define multiple cameras, only the first one will be active initially.

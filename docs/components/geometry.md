@@ -118,6 +118,8 @@ Example:
 <!-- Load from a URL -->
 <bml-entity geometry="type: mesh; src: https://example.com/models/spaceship.gltf"></bml-entity>
 ```
+*   **Live Example:** [View Mesh Loading Example](https://bayblonml-frontend.netlify.app/examples/mesh_example.html)
+
 **Note:** Mesh loading is asynchronous. The mesh will appear once loading is complete. Check the browser console for loading progress and errors.
 
 ### `type: photodome`
@@ -132,6 +134,8 @@ Creates a large sphere with an equirectangular photographic texture mapped to th
 | `useDirectMapping` | boolean | `false` | Specifies if the texture is mapped directly or needs correction (rarely needed). |
 
 Example: `<bml-entity geometry="type: photodome; src: assets/textures/skybox_360.jpg; size: 1500"></bml-entity>`
+
+*   **Live Example:** [View Photo Dome Example](https://bayblonml-frontend.netlify.app/examples/photodome_example.html)
 
 ### `type: videodome`
 
@@ -149,6 +153,8 @@ Creates a large sphere with an equirectangular video texture mapped to the insid
 | `poster`      | string  | `n/a`   | URL of an image to show before the video loads or plays.                       |
 
 Example: `<bml-entity geometry="type: videodome; src: assets/videos/surfing_360.mp4; size: 1200; muted: false; clickToPlay: true"></bml-entity>`
+
+*   **Live Example:** [View Video Dome Example](https://bayblonml-frontend.netlify.app/examples/videodome_example.html)
 
 ## Notes
 

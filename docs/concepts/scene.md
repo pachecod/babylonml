@@ -87,6 +87,9 @@ canvas {
     ```
     **Note:** WebXR support is dependent on the user's browser and hardware capabilities. The framework will attempt to initialize the requested mode, but it may fail if the requirements are not met. Check the browser console for messages regarding XR initialization status.
 
+    *   **Live VR Example:** [View VR Scene](https://bayblonml-frontend.netlify.app/examples/vr_scene.html)
+    *   **Live AR Example:** [View AR Scene](https://bayblonml-frontend.netlify.app/examples/ar_scene.html) (Requires compatible device/browser)
+
 ## Events
 
 *   **`bml-scene-ready`:** Fired when the Babylon.js Engine and Scene have been initialized, the default camera/light (if needed) are set up, and the render loop has started. The event `detail` contains references to the Babylon.js `scene` and `engine`.

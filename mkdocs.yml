@@ -19,7 +19,7 @@ nav:
     - Scale: components/scale.md
     - Geometry: components/geometry.md
     - Material: components/material.md
-  # - Examples: examples.md # Add later if needed
+  - Live Examples: examples.md
 
 # Theme configuration (using the default 'mkdocs' theme for now)
 theme:
