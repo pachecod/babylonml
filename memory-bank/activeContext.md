@@ -1,8 +1,8 @@
-# Active Context: BabylonML - XR Implementation
+# Active Context: BabylonML - Documentation Improvements
 
 ## Current Focus
 
-Implementing basic WebXR (VR and AR) support via a declarative attribute on the `<bml-scene>` element.
+Improving documentation and examples related to default scene setup (camera/light) and multiple camera handling. Recently fixed bugs in the multi-camera example and the core camera component's update logic.
 
 ## Task Breakdown (XR Support Added)
 
@@ -34,19 +34,32 @@ Implementing basic WebXR (VR and AR) support via a declarative attribute on the 
     *   Updated scene documentation (`docs/concepts/scene.md`).
     *   Created VR example (`examples/vr_scene.html`).
     *   Created AR example (`examples/ar_scene.html`).
+6.  **Documentation & Examples (Defaults/Multi-Camera):** **DONE**
+    *   Updated `docs/concepts/scene.md` to explain default camera/light behavior and the non-functional `light` attribute placeholder.
+    *   Updated `docs/components/camera.md` to explain multiple camera handling ("first-one-wins").
+    *   Created `examples/default_scene.html` demonstrating default setup.
+    *   Created `examples/explicit_camera_light_placeholder.html` demonstrating explicit camera and light placeholder attribute.
+    *   Created `examples/multi_camera_scene.html` demonstrating multiple camera definitions.
+7.  **Fix Multi-Camera Example:** **DONE**
+    *   Corrected the JavaScript logic in `examples/multi_camera_scene.html` to properly attach controls when switching to a camera that initially had `attachControl: false`.
+8.  **Fix Camera Component Update Logic:** **DONE**
+    *   Corrected the `update` method in `src/components/camera.js` to properly use pre-parsed `position` and `target` data, ensuring UniversalCamera works correctly.
+9.  **Fix Material Component Update Logic:** **DONE**
+    *   Corrected the `update` method in `src/components/material.js` to convert parsed color objects (e.g., `{r,g,b}`) into `BABYLON.Color3` instances before applying them to material properties (e.g., `diffuseColor`), enabling dynamic updates via `setAttribute`.
 
 ## Next Steps
 
-1.  Update `memory-bank/progress.md` to reflect the addition of the `xr` feature.
-2.  Run the build process (`npm run build`) to ensure the changes are bundled correctly.
-3.  Test the new examples (`vr_scene.html`, `ar_scene.html`) in compatible environments (requires build first).
-4.  Update `README.md` to mention the new XR feature.
-5.  Update `package.json` version if appropriate (e.g., to 1.2.0).
+1.  Update `memory-bank/progress.md` to reflect the documentation/example updates and the recent fixes (multi-camera example, camera component update, material component update).
+2.  **(DONE)** Run the build process (`npm run build`) to ensure the library includes recent changes.
+3.  Test the examples, paying special attention to `multi_camera_scene.html` and `basic_scene.html` to confirm fixes.
+4.  Consider implementing a basic `light` component.
+5.  Update `README.md` to mention recent features (XR, camera, etc.).
+6.  Update `package.json` version if appropriate.
 
-## Active Decisions/Considerations
-
--   **Camera Activation:** The first camera component initialized is set as active. Need to consider behavior if multiple cameras are defined or if the active one is removed dynamically. **Status: Basic 'first-one-wins' logic implemented.**
--   **Camera Updates:** The current `update` logic disposes and recreates the camera. A more refined approach would update properties on the existing camera instance where possible. **Status: Basic recreate logic implemented.**
+-   **Camera Activation:** The first camera component initialized is set as active. Need to consider behavior if multiple cameras are defined or if the active one is removed dynamically. **Status: Basic 'first-one-wins' logic implemented and documented.**
+-   **Camera Updates:** The `update` logic disposes and recreates the camera. It now correctly uses pre-parsed data for properties like `position` and `target`. A more refined approach (updating existing properties) could be implemented later. **Status: Basic recreate logic implemented, data parsing fixed.**
+-   **Default Camera/Light:** Scene provides defaults if no `[camera]` or `[light]` attribute is present. **Status: Implemented and documented.**
+-   **Light Component:** Adding a `light` attribute prevents the default light, but no component exists to parse it. **Status: Documented as a limitation; component implementation pending.**
 -   **Geometry Component Decision:** Extended the existing `geometry` component for `mesh`, `photodome`, `videodome`. **Decision Implemented.**
 -   **Asset Loading Errors:** Need robust error handling for external assets. **Status: Basic console logging implemented.**
 -   **Async Loading:** Ensure correct handling within lifecycle. **Status: Implemented for mesh loading.**

@@ -238,6 +238,25 @@ export default function registerGeometryComponent(ComponentManager) {
 
                     // Store the reference to the main object (Mesh, PhotoDome, VideoDome) for future updates/removal
                     this[GEOMETRY_OBJECT_KEY] = newObject;
+                    console.log(`Geometry: Stored internal reference for ${objectName}. newObject:`, newObject); // Log stored object
+
+                    // Expose the created object on the DOM element for external access
+                    // Use `this` because ComponentManager calls methods with the element as `this`
+                    console.log(`Geometry: Checking 'this' (element) before dispatch for ${objectName}. Element:`, this); // Log element check
+                    if (this) { // `this` should be the <bml-entity> element
+                        console.log(`Geometry: Setting BabylonGeometryObject on element for ${objectName}.`);
+                        this.BabylonGeometryObject = newObject; // Set property directly on the element
+                        // Dispatch a ready event on the element once the object is set
+                        console.log(`Geometry: Attempting to dispatch 'bml-geometry-ready' for ${objectName}...`);
+                        this.dispatchEvent(new CustomEvent('bml-geometry-ready', {
+                            detail: { geometryObject: newObject },
+                            bubbles: false // Keep it contained to the element
+                        }));
+                        console.log(`Geometry: Successfully dispatched 'bml-geometry-ready' for ${objectName} on element`, this);
+                    } else {
+                        console.warn(`Geometry: Could not dispatch 'bml-geometry-ready' for ${objectName}, 'this' (the element) was not found.`);
+                    }
+                    console.log(`Geometry: Finished processing block for ${objectName}.`); // Log end of block
 
                     // Apply initial material? The material component should handle this via the ComponentManager.
                 } else if (geometryType === 'mesh' && this[GEOMETRY_LOADING_KEY]) {
@@ -264,7 +283,12 @@ export default function registerGeometryComponent(ComponentManager) {
                 console.log(`Geometry: Removing component, disposing ${objectType} (${currentObject.name || 'unnamed'})`);
                 currentObject.dispose();
             }
-            this[GEOMETRY_OBJECT_KEY] = null; // Clear the reference
+            this[GEOMETRY_OBJECT_KEY] = null; // Clear the internal reference
+            // Clear the exposed property on the DOM element
+            // Use `this` again, as remove() is also called with the element as `this`
+            if (this) {
+                this.BabylonGeometryObject = null;
+            }
             this[GEOMETRY_LOADING_KEY] = false; // Ensure loading flag is reset
         }
     });

@@ -42,6 +42,37 @@ The `camera` attribute accepts a style-like string of key-value pairs, separated
 *   `universal` (or `free`): A first-person style camera. Uses `position` and `target`.
 *   `arcRotate`: A camera that rotates around a `target` point based on `alpha`, `beta`, and `radius`.
 
+## Multiple Cameras
+
+You can define multiple entities with the `camera` component within a single `<bml-scene>`. Each component will create its corresponding Babylon.js camera instance.
+
+However, Babylon.js can only render through one active camera at a time. BabylonML follows a **"first-one-wins"** approach:
+
+*   The **first** `<bml-entity>` with a `camera` component that successfully initializes will have its camera set as `scene.activeCamera`.
+*   Subsequent camera components will still create their cameras, but they will not be active by default.
+
+If you need to switch between cameras after the scene has loaded, you will need to use JavaScript to access the Babylon.js `Scene` object and set the `activeCamera` property manually. You can get a reference to a specific camera using `scene.getCameraByName(...)` or `scene.getCameraByID(...)` if you assign an `id` to your camera entities.
+
+**Example (JavaScript):**
+
+```javascript
+const sceneEl = document.querySelector('bml-scene');
+sceneEl.addEventListener('bml-scene-ready', (event) => {
+  const babylonScene = event.detail.scene;
+
+  // Assuming you have <bml-entity id="camera2" camera="...">
+  const secondCamera = babylonScene.getCameraByID('camera2_universalCamera'); // Name might vary based on type/id
+
+  if (secondCamera) {
+    // Switch to the second camera after 5 seconds
+    setTimeout(() => {
+      babylonScene.activeCamera = secondCamera;
+      console.log('Switched active camera to:', secondCamera.name);
+    }, 5000);
+  }
+});
+```
+
 **Note:** Currently, only the initial properties set via the attribute are used. Dynamically updating the `camera` attribute after the scene loads might not fully reconfigure the camera; it might dispose the old one and create a new one based on the new attribute string.
 
 **Active Camera:** The framework automatically sets the *first* camera component encountered in the DOM as the scene's active camera. If you define multiple cameras, only the first one will be active initially.

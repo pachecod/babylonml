@@ -84,22 +84,31 @@ export function registerCameraComponent(ComponentManager) { // Keep the registra
             const componentInstance = this.getAttachedComponents()['camera'];
             const schema = componentInstance?.schema; // Get schema from the stored instance
 
-            // Ensure data is an object, even if parsing failed or attribute was empty
+            // Ensure data is an object
             const currentData = data || {};
 
-            // Get defaults from schema only if properties are missing in parsed data
-            // Add checks to ensure schema and schema properties exist before accessing .default
-            const type = (currentData.type || schema?.type?.default || 'universal').toLowerCase();
-            const positionStr = currentData.position || schema?.position?.default || '0 5 -10';
-            const targetStr = currentData.target || schema?.target?.default || '0 0 0';
-            const alpha = parseNumber(currentData.alpha, schema?.alpha?.default ?? -Math.PI / 2);
-            const beta = parseNumber(currentData.beta, schema?.beta?.default ?? Math.PI / 2);
-            const radius = parseNumber(currentData.radius, schema?.radius?.default ?? 10);
-            const attachControl = parseBoolean(currentData.attachControl, schema?.attachControl?.default ?? true);
+            // Get defaults from schema (parse them here if needed)
+            const defaultPosition = parseVec3(schema?.position?.default || '0 5 -10');
+            const defaultTarget = parseVec3(schema?.target?.default || '0 0 0');
+            const defaultAlpha = schema?.alpha?.default ?? -Math.PI / 2;
+            const defaultBeta = schema?.beta?.default ?? Math.PI / 2;
+            const defaultRadius = schema?.radius?.default ?? 10;
+            const defaultAttachControl = schema?.attachControl?.default ?? true;
+            const defaultType = schema?.type?.default || 'universal';
 
-            // Parse vectors
-            const positionVec = vec3ToObject(parseVec3(positionStr)); // Convert to Vector3
-            const targetVec = vec3ToObject(parseVec3(targetStr));     // Convert to Vector3
+            // Use parsed data properties if available, otherwise use parsed defaults
+            // Assumes 'data' contains values already parsed by ComponentManager based on schema type
+            const type = (currentData.type || defaultType).toLowerCase();
+            const positionData = currentData.position ?? defaultPosition; // data.position should be parsed vec3 array/object
+            const targetData = currentData.target ?? defaultTarget;     // data.target should be parsed vec3 array/object
+            const alpha = currentData.alpha ?? defaultAlpha;
+            const beta = currentData.beta ?? defaultBeta;
+            const radius = currentData.radius ?? defaultRadius;
+            const attachControl = currentData.attachControl ?? defaultAttachControl;
+
+            // Convert parsed data (which should be arrays/objects from parseVec3) to Vector3 objects
+            const positionVec = vec3ToObject(positionData);
+            const targetVec = vec3ToObject(targetData);
 
 
             switch (type) {

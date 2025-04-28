@@ -64,16 +64,20 @@ export default function registerMaterialComponent(ComponentManager) {
             // Example properties for StandardMaterial:
             if (data.color !== undefined || data.diffuse !== undefined) {
                 const colorValue = data.color !== undefined ? data.color : data.diffuse; // Allow 'color' or 'diffuse'
-                material.diffuseColor = Parsers.parseColor(colorValue, new Color3(1, 1, 1)); // Default white
+                const parsedColor = Parsers.parseColor(colorValue, { r: 1, g: 1, b: 1 }); // Default white {r,g,b}
+                material.diffuseColor = new Color3(parsedColor.r, parsedColor.g, parsedColor.b);
             }
             if (data.ambient !== undefined) {
-                material.ambientColor = Parsers.parseColor(data.ambient, new Color3(0, 0, 0));
+                const parsedColor = Parsers.parseColor(data.ambient, { r: 0, g: 0, b: 0 }); // Default black {r,g,b}
+                material.ambientColor = new Color3(parsedColor.r, parsedColor.g, parsedColor.b);
             }
             if (data.emissive !== undefined) {
-                material.emissiveColor = Parsers.parseColor(data.emissive, new Color3(0, 0, 0));
+                const parsedColor = Parsers.parseColor(data.emissive, { r: 0, g: 0, b: 0 }); // Default black {r,g,b}
+                material.emissiveColor = new Color3(parsedColor.r, parsedColor.g, parsedColor.b);
             }
             if (data.specular !== undefined) {
-                material.specularColor = Parsers.parseColor(data.specular, new Color3(1, 1, 1));
+                const parsedColor = Parsers.parseColor(data.specular, { r: 1, g: 1, b: 1 }); // Default white {r,g,b}
+                material.specularColor = new Color3(parsedColor.r, parsedColor.g, parsedColor.b);
             }
             if (data.specularPower !== undefined) {
                 material.specularPower = Parsers.parseNumber(data.specularPower, 64);

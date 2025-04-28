@@ -24,7 +24,7 @@ BabylonML is a declarative, HTML-like framework for creating 3D scenes using the
     <script src="https://cdn.babylonjs.com/babylon.js"></script>
     <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
     <!-- Load BabylonML -->
-    <script src="dist/babylonml.umd.js"></script> <!-- Adjust path -->
+    <script src="dist/babylonml.min.js"></script> <!-- Adjust path -->
 </head>
 <body>
     <bml-scene>

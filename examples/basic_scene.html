@@ -33,37 +33,26 @@
 <body>
   <!-- The root element for the Babylon.js experience -->
   <bml-scene>
-
     <!--
-      An Entity using basic components (assuming they are registered).
-      Even if position/geometry/material aren't fully functional yet,
-      the framework should attempt to parse these attributes.
+        This scene relies on the default camera and light.
+        - No <bml-entity camera="..."> is defined, so a default FreeCamera is created.
+        - No <bml-entity light="..."> is defined, so a default HemisphericLight is created.
+        You can navigate using mouse/touch controls provided by the default FreeCamera.
     -->
-    <bml-entity
-      id="my-box"
-      position="0 1 -3"
-      rotation="0 45 0"
-      geometry="type: box; width: 1; height: 1; depth: 1"
-      material="type: standard; diffuseColor: #FF0000">
-        <!-- You could potentially nest entities -->
-        <!-- <bml-entity id="nested-sphere" position="0 1 0" geometry="type: sphere"></bml-entity> -->
-    </bml-entity>
+        <bml-entity
+            id="my-box"
+            geometry="type: box; size: 1"
+            material="color: #4682B4"
+            position="0 0.5 0"
+            rotation="0 45 0">
+        </bml-entity>
 
-     <!-- A ground plane -->
-     <bml-entity
-          id="ground"
-          position="0 0 -3"
-          geometry="type: ground; width: 5; height: 5"
-          material="type: standard; diffuseColor: #444444">
-      </bml-entity>
-
-    <!--
-      If you haven't implemented default camera/light in <bml-scene>,
-      you might need explicit ones (once their components are ready)
-      <bml-entity camera="type: free; position: 0 1.6 -5"></bml-entity>
-      <bml-entity light="type: hemispheric; intensity: 0.7"></bml-entity>
-    -->
-
+        <!-- A ground plane -->
+        <bml-entity
+            geometry="type: ground; width: 10; height: 10"
+            material="color: #8FBC8F">
+            <!-- Position defaults to 0 0 0 -->
+        </bml-entity>
   </bml-scene>
 
   <script>
@@ -71,13 +60,38 @@
     // after it's potentially ready.
     const sceneEl = document.querySelector('bml-scene');
 
-    // Example: Listening for the custom ready event (if you implemented it)
-    sceneEl.addEventListener('bml-scene-ready', (event) => {
-      console.log('EVENT: bml-scene-ready received!', event.detail);
-      const babylonScene = event.detail.scene;
-      // You could potentially manipulate the Babylon.js scene directly here
-      // babylonScene.getMeshByName('my-box').scaling.y = 2;
-    });
+       // Check if the scene is already ready when the script runs
+        if (sceneEl && sceneEl.isReady) {
+            console.log("DEBUG: Scene was already ready. Running setup directly.");
+            babylonScene = sceneEl.babylonScene; // Get scene reference directly
+            console.log("DEBUG: babylonScene reference obtained. ", babylonScene);
+
+            // lets change the color of the box to blue
+            const box = document.getElementById('my-box');
+            if (box) {
+                console.log('Attempting to change box color via attribute...');
+                box.setAttribute('material', 'color: #0000FF'); // Change color to blue
+            }
+         
+
+        } else if (sceneEl) {
+            console.log("DEBUG: Scene not ready yet. Adding event listener.");
+            sceneEl.addEventListener('bml-scene-ready', (event) => {
+                 console.log("DEBUG: bml-scene-ready event fired!"); // <-- Log event firing
+                 babylonScene = event.detail.scene;
+                 consoler.log("DEBUG: babylonScene reference obtained. ", babylonScene);
+                   // Example: Simple interaction after a delay
+                setTimeout(() => {
+                    const box = document.getElementById('my-box');
+                    if (box) {
+                        console.log('Attempting to change box color via attribute...');
+                        box.setAttribute('material', 'color: #0000FF'); // Change color to blue
+                    }
+                }, 5000); // After 5 seconds
+            });
+        }
+
+
 
     // Example: Accessing BML global API (if implemented)
     if (window.BML) {
@@ -86,14 +100,7 @@
       // BML.registerComponent('my-custom-spin', { ... });
     }
 
-     // Example: Simple interaction after a delay
-    // setTimeout(() => {
-    //    const box = document.getElementById('my-box');
-    //    if (box) {
-    //        console.log('Attempting to change box color via attribute...');
-    //        box.setAttribute('material', 'diffuseColor: #0000FF'); // Change color to blue
-    //    }
-    // }, 5000); // After 5 seconds
+
   </script>
 
 </body>

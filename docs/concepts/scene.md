@@ -23,9 +23,22 @@ The `<bml-scene>` element is the heart of any BabylonML application. It acts as 
 This minimal example will:
 1.  Create a Babylon.js Engine and Scene.
 2.  Create a `<canvas>` element filling the `<bml-scene>` container.
-3.  Add a default camera (likely a `FreeCamera`).
-4.  Add a default light (likely a `HemisphericLight`).
-5.  Start rendering the scene (which will initially be empty except for the default box entity).
+3.  Add a default camera (a `FreeCamera`).
+4.  Add a default light (a `HemisphericLight`).
+5.  Start rendering the scene (which will initially contain the box entity).
+
+## Default Camera and Light
+
+To make it easy to get started, `<bml-scene>` automatically creates a default camera and light source under specific conditions:
+
+*   **Default Camera:** If no element within the `<bml-scene>` has a `camera` attribute (e.g., `<bml-entity camera="...">`), a `BABYLON.FreeCamera` named `default_camera` is created. It's positioned at `(0, 1.6, -5)` and has mouse/touch controls attached to the canvas.
+*   **Default Light:** If no element within the `<bml-scene>` has a `light` attribute (e.g., `<bml-entity light="...">`), a `BABYLON.HemisphericLight` named `default_light` is created, providing basic ambient illumination from above.
+
+**Overriding Defaults:**
+
+*   If you add *any* element with a `camera` attribute, the default camera will **not** be created. You are then responsible for defining your own camera(s) using the [camera component](./../components/camera.md).
+*   If you add *any* element with a `light` attribute, the default light will **not** be created.
+    *   **Important Note:** As of the current version, there is no built-in `light` component. Adding a `light` attribute *only* prevents the default light; it does not automatically create a new light source based on the attribute value. To add specific lights (PointLight, SpotLight, etc.), you currently need to use custom JavaScript that interacts with the Babylon.js scene (e.g., within the `bml-scene-ready` event). A dedicated `light` component is planned for future development.
 
 ## Styling
 

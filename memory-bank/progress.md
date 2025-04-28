@@ -1,4 +1,4 @@
-# Progress: BabylonML - Basic XR Support Added
+# Progress: BabylonML - Documentation Improvements
 
 ## What Works (Assumed based on file structure)
 
@@ -20,32 +20,37 @@
 -   Asynchronous mesh loading via `SceneLoader`.
 -   `PhotoDome` and `VideoDome` integration.
 -   Updated `geometry` component documentation (`docs/components/geometry.md`).
--   Created `camera` component documentation (`docs/components/camera.md`).
--   **NEW:** Updated scene documentation (`docs/concepts/scene.md`) for `xr` attribute.
+-   Created `camera` component documentation (`docs/components/camera.md`), updated for multi-camera handling.
+-   Updated scene documentation (`docs/concepts/scene.md`) for `xr` attribute and default camera/light behavior.
+-   **NEW:** Added documentation clarification about the non-functional `light` attribute placeholder.
 
 ## What's Left to Build
 
-1.  **Build:** Run `npm run build` to bundle the library including XR changes.
-2.  **Test Examples:** Test `examples/vr_scene.html` and `examples/ar_scene.html` in compatible environments.
-3.  **README:** Update `README.md` to mention the new XR feature.
-4.  **Versioning:** Update `package.json` version (e.g., to 1.2.0).
-5.  **(DONE)** Custom Mesh Loading: Implemented in `geometry` component.
-6.  **(DONE)** PhotoDome: Implemented in `geometry` component.
-7.  **(DONE)** VideoDome: Implemented in `geometry` component.
-8.  **(DONE)** Geometry Documentation: Updated `docs/components/geometry.md`.
-9.  **(DONE)** Camera Component: Implemented `camera.js`, registered it, created `docs/components/camera.md`.
-10. **(DONE)** Examples: Created examples for `mesh`, `photodome`, `videodome`.
-11. **(DONE)** Basic XR Support: Implemented `xr` attribute on `<bml-scene>`, integrated `WebXRDefaultExperience`, updated docs, created examples.
+1.  **Build:** Run `npm run build` to bundle the library including recent changes.
+2.  **Test Examples:** Test new examples (`default_scene.html`, `explicit_camera_light_placeholder.html`, `multi_camera_scene.html`) and existing ones (`vr_scene.html`, `ar_scene.html`).
+3.  **README:** Update `README.md` to mention recent features (XR, camera, default behavior, etc.).
+4.  **Versioning:** Update `package.json` version (e.g., to 1.2.0 or 1.3.0).
+5.  **Light Component:** Consider implementing a basic `light` component.
+6.  **(DONE)** Custom Mesh Loading: Implemented in `geometry` component.
+7.  **(DONE)** PhotoDome: Implemented in `geometry` component.
+8.  **(DONE)** VideoDome: Implemented in `geometry` component.
+9.  **(DONE)** Geometry Documentation: Updated `docs/components/geometry.md`.
+10. **(DONE)** Camera Component: Implemented `camera.js`, registered it, created `docs/components/camera.md`.
+11. **(DONE)** Examples: Created examples for `mesh`, `photodome`, `videodome`.
+12. **(DONE)** Basic XR Support: Implemented `xr` attribute on `<bml-scene>`, integrated `WebXRDefaultExperience`, updated docs, created examples.
+13. **(DONE)** Documentation & Examples (Defaults/Multi-Camera): Updated docs for scene/camera, created new examples.
+14. **(DONE)** Fix Multi-Camera Example: Corrected JS logic in `examples/multi_camera_scene.html` to properly attach controls on switch.
+15. **(DONE)** Fix Camera Component Update Logic: Corrected `update` method in `src/components/camera.js` to use pre-parsed data.
 
 ## Current Status
 
 -   Core framework structure is in place.
 -   Basic primitives, transform, material, geometry (including mesh/domes), and camera components are functional.
--   **NEW:** Basic XR support (VR/AR session entry) via `xr` attribute on `<bml-scene>` is implemented.
--   Documentation updated for `geometry`, `camera`, and `scene` (XR attribute).
--   Memory Bank files (`activeContext.md`, `progress.md`) updated.
--   **NEW:** Examples created for VR and AR.
--   Next steps involve building the library and testing the new XR examples.
+-   Basic XR support (VR/AR session entry) via `xr` attribute on `<bml-scene>` is implemented.
+-   Documentation updated for `geometry`, `camera` (including multi-camera), and `scene` (XR attribute, default camera/light).
+-   Memory Bank files (`activeContext.md`, `progress.md`) updated to reflect recent fixes and documentation (multi-camera example, camera component update).
+-   Examples created for VR, AR, default scene setup, explicit camera/light placeholder, and multiple cameras (including fixes for switching logic and camera component).
+-   Next steps involve building the library, testing the examples (especially multi-camera), and potentially implementing a `light` component.
 
 ## Known Issues
 
@@ -54,17 +59,22 @@
 -   Performance implications of loading large assets haven't been tested.
 -   Interaction between the `material` component and the internal materials of `PhotoDome`/`VideoDome` might need refinement/clarification.
 -   `camera` component's `update` logic currently disposes and recreates the camera; a more efficient update modifying existing properties could be implemented later.
--   Active camera logic is basic ('first component wins'). More complex scenarios (multiple cameras, dynamic removal) might require more sophisticated handling.
--   **NEW:** XR error handling is basic; relies on console messages and `WebXRDefaultExperience` UI.
--   **NEW:** XR feature set is minimal (session entry only). Controllers, advanced AR features (hit-testing, anchors), etc., are not yet declaratively supported.
--   **NEW:** Compatibility and performance of XR features across different devices/browsers need testing.
+-   Active camera logic is basic ('first component wins') and documented. More complex scenarios (multiple cameras, dynamic removal) might require more sophisticated handling or clearer documentation on manual JS intervention.
+-   **NEW:** Light Component: Adding a `light` attribute prevents the default light, but no component exists to parse it or create a light source. This is a known limitation requiring custom JS or a future component.
+-   XR error handling is basic; relies on console messages and `WebXRDefaultExperience` UI.
+-   XR feature set is minimal (session entry only). Controllers, advanced AR features (hit-testing, anchors), etc., are not yet declaratively supported.
+-   Compatibility and performance of XR features across different devices/browsers need testing.
 -   **FIXED:** `ReferenceError: BABYLON is not defined` in geometry component (used imported `AbstractMesh`).
 -   **FIXED:** Mesh loading example (`mesh_example.html`) updated to use a CORS-enabled URL (`Avocado.glb`).
 -   **FIXED:** Mesh loading logic in `geometry` component updated to correctly handle URLs with query parameters by passing the full URL as the filename to `SceneLoader.ImportMeshAsync`.
 -   **FIXED:** Mesh loading error ("JSON parse") by installing `@babylonjs/loaders` and importing `@babylonjs/loaders/glTF` in `geometry.js` to ensure the loader is registered.
+-   **FIXED:** Multi-camera example (`examples/multi_camera_scene.html`) switching logic now correctly attaches controls to the target camera regardless of its initial `attachControl` setting.
+-   **FIXED:** Camera component (`src/components/camera.js`) `update` method now correctly uses pre-parsed `position` and `target` data from the ComponentManager, resolving issues with UniversalCamera setup.
+   **FIXED:** Material component (`src/components/material.js`) `update` method now correctly converts parsed color objects (e.g., `{r,g,b}`) into `BABYLON.Color3` instances before applying them to material properties (e.g., `diffuseColor`), enabling dynamic updates via `setAttribute`.
 
 ## Project Evolution / Decisions
 
 -   **Decision Implemented:** Extended the existing `geometry` component to handle `mesh`, `photodome`, and `videodome` types.
 -   **Decision Implemented:** Created a new `camera` component to handle camera definitions declaratively.
 -   **Decision Implemented:** Added basic XR support via an `xr` attribute on `<bml-scene>` leveraging `WebXRDefaultExperience`.
+-   **Decision Implemented:** Clarified default camera/light behavior and multiple camera handling in documentation and examples.
