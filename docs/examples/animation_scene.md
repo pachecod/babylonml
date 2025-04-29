@@ -1,5 +1,7 @@
 # Animation Scene Example
 
+[View Live Example](https://babylonml-frontend.netlify.app/examples/animation_scene.html){:target="_blank"}
+
 This example demonstrates the use of the `animation` component to animate various properties of entities and their components. It shows:
 
 *   Animating `rotation.y` for continuous rotation.
@@ -9,7 +11,6 @@ This example demonstrates the use of the `animation` component to animate variou
 *   Animating `scaling` for a non-looping growth effect.
 *   Starting an animation (`material.diffuseColor`) manually using JavaScript after a delay.
 
-[View Live Example](../../examples/animation_scene.html)
 
 ## Source Code
 

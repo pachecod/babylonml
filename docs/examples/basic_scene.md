@@ -1,5 +1,7 @@
 # Basic Scene Example
 
+[View Live Example](https://babylonml-frontend.netlify.app/examples/basic_scene.html){:target="_blank"}
+
 This example demonstrates a fundamental BabylonML scene setup. It includes:
 
 *   A `<bml-scene>` element.
@@ -8,7 +10,6 @@ This example demonstrates a fundamental BabylonML scene setup. It includes:
 *   Reliance on the default camera and light provided by the `<bml-scene>` when no explicit camera or light components are defined.
 *   Simple JavaScript interaction after the scene is ready to modify a component attribute.
 
-[View Live Example](../../examples/basic_scene.html)
 
 ## Source Code
 

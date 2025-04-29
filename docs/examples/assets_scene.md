@@ -1,5 +1,7 @@
 # Assets Scene Example (Planned Feature)
 
+[View Live Example](https://babylonml-frontend.netlify.app/examples/assets_scene.html){:target="_blank"} (Note: Will not function correctly until the `<bml-assets>` feature is implemented)
+
 **Note:** The `<bml-assets>` system demonstrated in this example is a planned feature and is **not yet implemented** in the current version of BabylonML. This example shows the intended syntax and usage.
 
 This example demonstrates how the planned asset management system could work:
@@ -8,7 +10,6 @@ This example demonstrates how the planned asset management system could work:
 *   Reference these preloaded assets in components using the ID selector (e.g., `geometry="src: #boxModel"`, `material="map: #woodTex"`).
 *   This aims to improve loading efficiency and scene organization by preloading assets before they are needed.
 
-[View Live Example](../../examples/assets_scene.html) (Note: Will not function correctly until the `<bml-assets>` feature is implemented)
 
 ## Source Code (Illustrative)
 

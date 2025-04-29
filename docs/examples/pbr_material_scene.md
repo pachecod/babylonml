@@ -1,5 +1,7 @@
 # PBR Material Scene Example
 
+[View Live Example](https://babylonml-frontend.netlify.app/examples/pbr_material_scene.html){:target="_blank"}
+
 This example demonstrates using Physically Based Rendering (PBR) materials with the `material` component by setting `shader: pbr`. It showcases different combinations of `metalness` and `roughness` properties:
 
 *   A highly metallic, smooth sphere (`metalness: 0.9`, `roughness: 0.1`).
@@ -8,8 +10,6 @@ This example demonstrates using Physically Based Rendering (PBR) materials with 
 *   A double-sided plane with partial opacity.
 
 Good lighting (directional and hemispheric) is included, as PBR materials rely heavily on lighting for their appearance.
-
-[View Live Example](../../examples/pbr_material_scene.html)
 
 ## Source Code
 

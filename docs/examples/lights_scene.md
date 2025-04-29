@@ -1,5 +1,7 @@
 # Lights Scene Example
 
+[View Live Example](https://babylonml-frontend.netlify.app/examples/lights_scene.html){:target="_blank"}
+
 This example demonstrates the usage of the `light` component to add various types of light sources to a BabylonML scene. It includes:
 
 *   A Directional Light
@@ -9,7 +11,6 @@ This example demonstrates the usage of the `light` component to add various type
 
 Since lights are explicitly defined, the default hemispheric light provided by `<bml-scene>` is not created.
 
-[View Live Example](../../examples/lights_scene.html)
 
 ## Source Code
 

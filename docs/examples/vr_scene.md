@@ -1,5 +1,7 @@
 # VR Scene Example
 
+[View Live Example](https://babylonml-frontend.netlify.app/examples/vr_scene.html){:target="_blank"} (Requires VR-compatible device/browser)
+
 This example demonstrates how to enable basic Virtual Reality (VR) support in BabylonML using the `xr="vr"` attribute on the `<bml-scene>` element.
 
 *   It initializes a WebXR session in VR mode (requires a compatible VR headset and browser).
@@ -8,7 +10,6 @@ This example demonstrates how to enable basic Virtual Reality (VR) support in Ba
 
 **Note:** This provides basic VR entry. Features like controller interactions, teleportation, etc., are not included in this basic setup and would require additional components or JavaScript.
 
-[View Live Example](../../examples/vr_scene.html) (Requires VR-compatible device/browser)
 
 ## Source Code
 ```html

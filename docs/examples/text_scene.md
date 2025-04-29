@@ -1,5 +1,7 @@
 # Text Scene Example (Planned Feature)
 
+[View Live Example](https://babylonml-frontend.netlify.app/examples/text_scene.html){:target="_blank"} (Note: Will not function correctly until the `text` component feature is implemented)
+
 **Note:** The `text` component demonstrated in this example is a planned feature and is **not yet implemented** in the current version of BabylonML. This example shows the intended syntax and usage.
 
 This example demonstrates how the planned `text` component could be used to display text in the 3D scene:
@@ -8,7 +10,6 @@ This example demonstrates how the planned `text` component could be used to disp
 *   The component would likely render the text onto a plane using Babylon.js's Dynamic Texture or GUI features.
 *   The example also shows how text properties could potentially be updated dynamically via JavaScript.
 
-[View Live Example](../../examples/text_scene.html) (Note: Will not function correctly until the `text` component feature is implemented)
 
 ## Source Code (Illustrative)
 

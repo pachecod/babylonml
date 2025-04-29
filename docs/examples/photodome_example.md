@@ -1,5 +1,7 @@
 # Photo Dome Example
 
+[View Live Example](https://babylonml-frontend.netlify.app/examples/photodome_example.html){:target="_blank"}
+
 This example demonstrates how to display a 360-degree panoramic image using the `geometry` component with `type: photodome`.
 
 *   The `src` attribute points to the URL of the 360 image.
@@ -7,7 +9,6 @@ This example demonstrates how to display a 360-degree panoramic image using the 
 *   An `arcRotate` camera is used, positioned inside the dome (`radius: 0.1`) to allow the user to look around.
 *   A small box is added inside the dome as a point of reference.
 
-[View Live Example](../../examples/photodome_example.html)
 
 ## Source Code
 

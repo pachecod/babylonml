@@ -1,5 +1,7 @@
 # Sound Scene Example
 
+[View Live Example](https://babylonml-frontend.netlify.app/examples/sound_scene.html){:target="_blank"}
+
 This example demonstrates the `sound` component for playing audio in a BabylonML scene. It includes:
 
 *   **Non-Spatial Sound:** An entity (`background-music`) plays looping background audio that doesn't change based on listener position.
@@ -8,7 +10,6 @@ This example demonstrates the `sound` component for playing audio in a BabylonML
 
 Note: Browser policies often require user interaction (like a click) before audio can play automatically. The `autoplay: true` attribute might not work until the user interacts with the page. The example uses placeholder sound URLs; replace them with actual accessible audio files.
 
-[View Live Example](../../examples/sound_scene.html)
 
 ## Source Code
 

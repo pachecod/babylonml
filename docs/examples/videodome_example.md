@@ -1,13 +1,13 @@
 # Video Dome Example
 
+[View Live Example](https://babylonml-frontend.netlify.app/examples/videodome_example.html){:target="_blank"}
+
 This example demonstrates how to display a 360-degree video using the `geometry` component with `type: videodome`.
 
 *   The `src` attribute points to the URL of the video file.
 *   Attributes like `autoPlay`, `loop`, `muted`, and `clickToPlay` control video playback behavior. Note that `autoplay` often requires `muted: true` due to browser policies.
 *   An `arcRotate` camera is positioned inside the dome (`radius: 0.1`).
 *   This example also includes custom JavaScript logic to override the default mouse wheel camera zoom and instead control the `fovMultiplier` property of the VideoDome, creating a zoom effect within the 360 video itself. It waits for the `bml-geometry-ready` event from the video dome entity before attaching the zoom listeners.
-
-[View Live Example](../../examples/videodome_example.html)
 
 ## Source Code
 

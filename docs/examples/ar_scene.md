@@ -1,5 +1,7 @@
 # AR Scene Example
 
+[View Live Example](https://babylonml-frontend.netlify.app/examples/ar_scene.html){:target="_blank"} (Requires AR-compatible device/browser)
+
 This example demonstrates how to enable basic Augmented Reality (AR) support in BabylonML using the `xr="ar"` attribute on the `<bml-scene>` element.
 
 *   It initializes a WebXR session in AR mode (requires a compatible device and browser, often running on HTTPS).
@@ -8,7 +10,6 @@ This example demonstrates how to enable basic Augmented Reality (AR) support in 
 
 **Note:** This provides basic AR entry. More advanced features like plane detection, hit-testing, or anchors would require additional components or JavaScript interaction.
 
-[View Live Example](../../examples/ar_scene.html) (Requires AR-compatible device/browser)
 
 ## Source Code
 

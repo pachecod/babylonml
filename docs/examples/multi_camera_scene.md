@@ -1,5 +1,7 @@
 # Multi-Camera Scene Example
 
+[View Live Example](https://babylonml-frontend.netlify.app/examples/multi_camera_scene.html){:target="_blank"}
+
 This example demonstrates how to define multiple cameras within a BabylonML scene and switch between them using JavaScript.
 
 *   Two cameras (`arcRotate` and `universal`) are defined using `<bml-entity camera="...">`.
@@ -8,7 +10,6 @@ This example demonstrates how to define multiple cameras within a BabylonML scen
 *   Since a camera is explicitly defined, the default scene camera is not created.
 *   Since no light is explicitly defined, the default scene light *is* created.
 
-[View Live Example](../../examples/multi_camera_scene.html)
 
 ## Source Code
 

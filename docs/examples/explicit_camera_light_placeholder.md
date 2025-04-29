@@ -1,11 +1,12 @@
 # Explicit Camera & Light Example
 
+[View Live Example](https://babylonml-frontend.netlify.app/examples/explicit_camera_light_placeholder.html){:target="_blank"}
+
 This example demonstrates the behavior when cameras and lights are explicitly defined using `<bml-entity>` tags with `camera` or `light` attributes:
 
 *   **Explicit Camera:** Defining `<bml-entity camera="...">` creates the specified camera (an ArcRotateCamera in this case) and prevents the default FreeCamera from being created by the `<bml-scene>`.
 *   **Explicit Light:** Defining `<bml-entity light="...">` creates the specified light (a PointLight in this case, as the `light` component is now implemented) and prevents the default HemisphericLight from being created.
 
-[View Live Example](../../examples/explicit_camera_light_placeholder.html)
 
 ## Source Code
 
