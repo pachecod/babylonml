@@ -69,11 +69,28 @@ Because browsers have security restrictions, you need to serve this HTML file fr
     ```bash
     # If your HTML is index.html in the current directory
     npx http-server -c-1
-
-    # If serving from the babylonml root and opening examples/basic_scene.html
-    # npx http-server . -o examples/basic_scene.html -c-1
+    ```
+    Alternatively, if serving from the `babylonml` project root and opening `examples/basic_scene.html`:
+    ```bash
+    npx http-server . -o examples/basic_scene.html -c-1
     ```
     The `-c-1` flag disables caching, which is helpful during development.
 3.  **View:** Open the URL provided by the server (usually `http://127.0.0.1:8080`) in your web browser. You should see a red box sitting on a grey ground plane.
 
 You've now set up and run your first BabylonML scene! Explore the other documentation sections to learn more about entities, components, and advanced features.
+
+## Using via CDN
+
+If you prefer not to build the library locally, you can include BabylonML directly from the CDN using the following script tags in your HTML's `<head>`:
+
+**Recommended (Minified):**
+```html
+<script src="https://firebasestorage.googleapis.com/v0/b/story-splat.firebasestorage.app/o/public%2Fbabylon%2Fcdn%2Fbabylonml.min-1.1.0.js?alt=media&token=b2fe3e00-4c27-467b-accb-89d7783348b5"></script>
+```
+
+**Development (Unminified):**
+```html
+<script src="https://firebasestorage.googleapis.com/v0/b/story-splat.firebasestorage.app/o/public%2Fbabylon%2Fcdn%2Fbabylonml-1.1.0.js?alt=media&token=b20162e6-7e6c-4ee6-8c6a-45e90f1a031e"></script>
+```
+
+Using the CDN allows you to quickly start using BabylonML without needing a local build setup. Simply include one of the script tags above, and you can proceed directly to the "Your First Scene" step, skipping the "Installation" section.

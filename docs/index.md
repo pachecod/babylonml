@@ -1,46 +1,27 @@
-# Welcome to BabylonML
+# Welcome to BabylonML!
 
-BabylonML makes creating 3D web experiences easier by providing HTML-like tags to control the powerful [Babylon.js](https://www.babylonjs.com/) engine.
+**Build stunning 3D web experiences with the simplicity of HTML.**
 
-Instead of writing complex JavaScript setup code, you can define your scene declaratively:
+BabylonML is a declarative, component-based framework built on top of the powerful [Babylon.js](https://www.babylonjs.com/) engine. It allows web developers to create complex 3D scenes using familiar HTML-like tags, abstracting away much of the boilerplate JavaScript typically required.
 
-```html
-<bml-scene>
-  <bml-entity
-    id="my-box"
-    position="0 1 -3"
-    rotation="0 45 0"
-    geometry="type: box; width: 1; height: 1; depth: 1"
-    material="type: standard; diffuseColor: #FF0000">
-  </bml-entity>
+## Why BabylonML?
 
-  <bml-entity
-    id="ground"
-    position="0 0 -3"
-    geometry="type: ground; width: 5; height: 5"
-    material="type: standard; diffuseColor: #444444">
-  </bml-entity>
-</bml-scene>
-```
+*   **Declarative:** Define your scene structure, entities, and their properties directly in HTML.
+*   **Component-Based:** Attach reusable behaviors (like position, rotation, materials, lights, animations, sounds) to entities using simple attributes.
+*   **Easy to Learn:** Leverages existing web development knowledge (HTML, CSS-like syntax for components).
+*   **Powerful:** Harnesses the full rendering capabilities and features of Babylon.js.
+*   **Rapid Prototyping:** Quickly iterate on 3D ideas and build interactive experiences.
 
-**➡️ [View Live Examples](examples.md)**
+## Get Started
 
-## Key Concepts
+Ready to dive in? Head over to the **[Getting Started](getting-started.md)** guide to set up your first scene in minutes.
 
-*   **`<bml-scene>`:** The root element that initializes the Babylon.js engine and scene.
-*   **`<bml-entity>`:** Represents an object or node within the 3D scene. Think of it like a `div` for 3D.
-*   **Components:** Attributes like `position`, `rotation`, `geometry`, and `material` that define the properties and behavior of an entity.
+## Explore
 
-## Getting Started
+*   **[Core Concepts](concepts/scene.md):** Understand the fundamentals of Scenes, Entities, and Components.
+*   **[Components Reference](components/position.md):** See the full list of available built-in components and their properties.
+*   **[Examples](examples/index.md):** Browse live examples showcasing various features.
 
-*(Documentation on installation and basic usage will go here)*
+---
 
-## Next Steps
-
-This documentation is just getting started. Future sections will cover:
-
-*   Detailed installation instructions.
-*   In-depth explanations of core concepts (`<bml-scene>`, `<bml-entity>`, Component System).
-*   Reference guides for all built-in components.
-*   Examples of common use cases.
-*   How to create custom components.
+We hope you enjoy building with BabylonML!

@@ -1,5 +1,6 @@
 site_name: BabylonML Documentation
 site_description: 'Declarative 3D scenes for the web using Babylon.js and HTML.'
+repo_name: 'BabylonML'
 site_author: 'BabylonML Contributors'
 
 # Define the directory containing your Markdown documentation files
@@ -10,8 +11,8 @@ nav:
   - Home: index.md
   - Getting Started: getting-started.md
   - Core Concepts:
-    - Scene (`<bml-scene>`): concepts/scene.md
-    - Entity (`<bml-entity>`): concepts/entity.md
+    - Scene: concepts/scene.md
+    - Entity: concepts/entity.md
     - Components: concepts/components.md
   - Components Reference:
     - Position: components/position.md
@@ -23,20 +24,52 @@ nav:
     - Light: components/light.md # Added Light component
     - Animation: components/animation.md # Added Animation component
     - Sound: components/sound.md # Added Sound component
-  - Live Examples: examples.md
+  - Examples:
+    - Overview: examples/index.md
+    - Basic Scene: examples/basic_scene.md
+    - Animation: examples/animation_scene.md
+    - AR Scene: examples/ar_scene.md
+    - Assets (Planned): examples/assets_scene.md
+    - Explicit Cam/Light: examples/explicit_camera_light_placeholder.md
+    - Lights: examples/lights_scene.md
+    - Mesh Loading: examples/mesh_example.md
+    - Multi-Camera: examples/multi_camera_scene.md
+    - PBR Material: examples/pbr_material_scene.md
+    - Photo Dome: examples/photodome_example.md
+    - Sound: examples/sound_scene.md
+    - Text (Planned): examples/text_scene.md
+    - Video Dome: examples/videodome_example.md
+    - VR Scene: examples/vr_scene.md
 
 # Theme configuration (using the default 'mkdocs' theme for now)
 theme:
-  name: mkdocs
-  # You can customize themes further, e.g., 'material' theme requires installation
-  # name: material
-  # features:
-  #   - navigation.tabs
-  #   - navigation.sections
-  #   - toc.integrate
-  # palette:
-  #   primary: 'blue'
-  #   accent: 'light blue'
+  name: material
+  favicon: assets/favicon.ico # Optional: Add a favicon
+  features:
+    - navigation.instant
+    - navigation.tracking
+    # - navigation.tabs.sticky # Optional: Makes tabs sticky
+    - search.suggest
+    - search.highlight
+    - content.code.annotate
+    - content.code.copy
+  palette:
+    # Dark Mode
+    - scheme: slate
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+      primary: orange # Or another color like 'blue grey'
+      accent: amber # Or another accent
+
+    # Light Mode
+    - scheme: default
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+      primary: navy blue # Or another color
+      accent: orange # Or another accent
+      
   extra_css:
     - css/custom.css
 

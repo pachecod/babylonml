@@ -32,42 +32,12 @@
 
 ## What's Left to Build
 
-1.  **(DONE)** Rebuild library after Rollup config change.
-2.  **Test Docs:** Run `npm run docs:serve` and verify navigation, scrolling, and content for light/material pages.
-3.  **Test Examples:** Test examples (local or live) to confirm `Ctrl+I` inspector toggle works, and test `lights_scene.html` and `pbr_material_scene.html`.
-4.  **README:** Update `README.md` to mention recent features (XR, camera, inspector, light, PBR material, etc.).
-5.  **Versioning:** Update `package.json` version (e.g., to 1.3.0).
-6.  **(DONE)** Light Component: Implemented `light.js`, registered it, created `docs/components/light.md`, added to nav, created `examples/lights_scene.html`.
-7.  **(DONE)** Material Component Enhancement: Updated `material.js` for PBR support, updated `docs/components/material.md`, created `examples/pbr_material_scene.html`.
-8.  **(DONE)** Custom Mesh Loading: Implemented in `geometry` component.
-7.  **(DONE)** PhotoDome: Implemented in `geometry` component.
-8.  **(DONE)** VideoDome: Implemented in `geometry` component.
-9.  **(DONE)** Geometry Documentation: Updated `docs/components/geometry.md`.
-10. **(DONE)** Camera Component: Implemented `camera.js`, registered it, created `docs/components/camera.md`.
-11. **(DONE)** Examples: Created examples for `mesh`, `photodome`, `videodome`.
-12. **(DONE)** Basic XR Support: Implemented `xr` attribute on `<bml-scene>`, integrated `WebXRDefaultExperience`, updated docs, created examples.
-13. **(DONE)** Documentation & Examples (Defaults/Multi-Camera): Updated docs for scene/camera, created new examples.
-14. **(DONE)** Fix Multi-Camera Example: Corrected JS logic in `examples/multi_camera_scene.html` to properly attach controls on switch.
-15. **(DONE)** Fix Camera Component Update Logic: Corrected `update` method in `src/components/camera.js` to use pre-parsed data.
-16. **(DONE)** Fix Documentation Formatting: Added `camera.md` to `mkdocs.yml` navigation.
-17. **(DONE)** Fix Documentation Scrolling: Added custom CSS to allow scrolling on main content area.
-18. **(DONE)** Integrate Inspector (Optional): Added `@babylonjs/inspector` dependency and toggle logic (`Ctrl+I`) using dynamic import in `BmlScene.js`.
-19. **(DONE)** Animation Component: Implemented `animation.js`, registered it, created `docs/components/animation.md`, added to nav, created `examples/animation_scene.html`.
-20. **(NEW)** Sound Component: Implemented `sound.js`, registered it, created `docs/components/sound.md`, added to nav, created `examples/sound_scene.html`.
-21. **(NEW)** Fix Material Component Timing Error: Corrected checks in `material.js` update method to ensure `babylonNode` is an `AbstractMesh` with a `material` property before proceeding. Added `AbstractMesh` import. Rebuilt library. **(Superseded by event listener fix)**
-22. **(NEW)** Fix Light Component Timing Error: Corrected checks in `light.js` init/update methods to ensure `babylonNode` and scene are ready. Corrected internal references. Rebuilt library.
-23. **(NEW)** Fix Material/Geometry Timing Issue: Refactored `material.js` to use `bml-geometry-ready` event listener. Corrected `.bind(this)` TypeError in `init` by storing the bound listener reference. Rebuilt library.
-24. **(NEW)** Fix Material Component `init` TypeError (`.bind`): **DONE** Refactored `material.js` `init` method to define the `bml-geometry-ready` handler as an inline arrow function, resolving a regression where `this._onGeometryReady` was `undefined` during the `.bind(this)` call. Removed redundant `_onGeometryReady` method. Rebuilt library.
-25. **(NEW)** Fix Component Initialization Context Issues: **DONE**
-    *   Identified that a previous attempt (Task #25) to fix `material.js` `init` errors by changing the `this` context in `ComponentManager.js` was incorrect and caused new errors (`this._applyMaterial is not a function` in material, `Cannot read properties of undefined (reading 'toLowerCase')` in light).
-    *   Reverted changes in `ComponentManager.js` to correctly set the `this` context for component lifecycle methods (`init`, `update`, `remove`) to the component *instance* itself.
-    *   Reverted changes in `material.js` `init` method signature back to `init(data)` and ensured it uses `this.el` (available via the instance context).
-    *   Confirmed `light.js` structure was correct and did not require changes.
-    *   Rebuilt library (`npm run build`).
-26. **(NEW)** Fix Component Initial Update Context: **DONE**
-    *   Identified that the initial `update` call within `ComponentManager.js`'s `handleAttributeInitialization` was incorrectly using the `entityElement` as the `this` context, causing `TypeError: this._applyMaterial is not a function` in `material.js`.
-    *   Corrected the `call` in `handleAttributeInitialization` to use the `instance` as the `this` context for the initial `update`.
-    *   Rebuilt library (`npm run build`).
+1.  **Implement Asset Management System (`<bml-assets>`).**
+2.  **Implement Text Component (`src/components/text.js`).**
+3.  **Test Docs:** Run `npm run docs:serve` and verify the new examples structure, navigation, and content.
+4.  **Test Examples:** Test all examples (local or live) via the new documentation links.
+5.  **README:** Update `README.md` to mention recent features (XR, camera, inspector, light, PBR material, animation, sound, **docs overhaul**) and link to the improved documentation.
+6.  **Versioning:** Update `package.json` version (e.g., to 1.4.0 or similar).
 
 ## Current Status
 
@@ -82,7 +52,8 @@
 -   **NEW:** Build configuration updated to bundle `@babylonjs/core`; library rebuilt successfully.
 -   **NEW:** Material/Geometry timing issue resolved in `material.js` using a correctly implemented event listener (defined inline in `init`); library rebuilt successfully.
 -   **NEW:** Component initialization context handling in `ComponentManager.js` confirmed and corrected to use the component instance as `this`, resolving errors in `material.js` and `light.js`.
--   Next steps involve **deferred** testing/documentation updates, followed by implementing the next feature (Asset Management or Text Component).
+-   **NEW:** Documentation overhauled: Added CDN links, restructured examples into `docs/examples/` with an overview and individual pages, updated `mkdocs.yml` navigation.
+-   Next steps involve implementing the next features (Asset Management or Text Component), followed by deferred testing and README updates.
 
 ## Known Issues
 

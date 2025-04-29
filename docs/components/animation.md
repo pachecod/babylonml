@@ -70,8 +70,6 @@ The following easing function names are supported for the `easing` property:
 <html>
 <head>
     <title>BabylonML Animation Example</title>
-    <script src="https://cdn.babylonjs.com/babylon.js"></script>
-    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
     <script src="../dist/babylonml.js"></script> <!-- Adjust path as needed -->
     <style>
         html, body { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; }

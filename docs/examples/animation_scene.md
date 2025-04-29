@@ -1,7 +1,24 @@
+# Animation Scene Example
+
+This example demonstrates the use of the `animation` component to animate various properties of entities and their components. It shows:
+
+*   Animating `rotation.y` for continuous rotation.
+*   Animating `material.opacity` for a pulsing effect.
+*   Animating `position.y` for vertical movement.
+*   Animating `light.intensity` for a fading light effect.
+*   Animating `scaling` for a non-looping growth effect.
+*   Starting an animation (`material.diffuseColor`) manually using JavaScript after a delay.
+
+[View Live Example](../../examples/animation_scene.html)
+
+## Source Code
+
+```html
 <!DOCTYPE html>
 <html>
 <head>
     <title>BabylonML Animation Example</title>
+    <!-- Link to BabylonML library -->
     <script src="../dist/babylonml.js"></script> <!-- Adjust path if your build output is elsewhere -->
     <style>
         html, body { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; }
@@ -76,3 +93,4 @@
     </script>
 </body>
 </html>
+```

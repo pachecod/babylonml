@@ -1,3 +1,18 @@
+# Assets Scene Example (Planned Feature)
+
+**Note:** The `<bml-assets>` system demonstrated in this example is a planned feature and is **not yet implemented** in the current version of BabylonML. This example shows the intended syntax and usage.
+
+This example demonstrates how the planned asset management system could work:
+
+*   Define assets (meshes, textures) within a `<bml-assets>` block using `<bml-asset-item>` tags, assigning each an ID.
+*   Reference these preloaded assets in components using the ID selector (e.g., `geometry="src: #boxModel"`, `material="map: #woodTex"`).
+*   This aims to improve loading efficiency and scene organization by preloading assets before they are needed.
+
+[View Live Example](../../examples/assets_scene.html) (Note: Will not function correctly until the `<bml-assets>` feature is implemented)
+
+## Source Code (Illustrative)
+
+```html
 <!DOCTYPE html>
 <html>
 <head>
@@ -11,7 +26,7 @@
 <body>
     <bml-scene xr="false"> <!-- Disable XR for simplicity -->
 
-        <!-- Asset Definitions -->
+        <!-- Asset Definitions (Planned Feature) -->
         <bml-assets>
             <bml-asset-item id="boxModel" src="https://playground.babylonjs.com/scenes/BoomBox.glb" type="mesh"></bml-asset-item>
             <bml-asset-item id="woodTex" src="https://playground.babylonjs.com/textures/wood.jpg" type="texture"></bml-asset-item>
@@ -61,3 +76,4 @@
     </script>
 </body>
 </html>
+```

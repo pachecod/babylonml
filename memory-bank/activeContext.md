@@ -1,8 +1,8 @@
-# Active Context: BabylonML - Animation Component Implementation
+# Active Context: BabylonML - Documentation Overhaul
 
 ## Current Focus
 
-Pivoting from documentation updates to implementing new features: an A-Frame-like asset management system (`<bml-assets>`) and a text component. Build, testing, and previous documentation updates (README) remain deferred.
+Completed the documentation overhaul task. This involved adding CDN links, restructuring the examples section into an overview page and individual pages per example, and updating the site navigation. The next focus will return to implementing new features, likely starting with the Asset Management System.
 
 ## Task Breakdown (XR Support Added)
 
@@ -123,26 +123,32 @@ Pivoting from documentation updates to implementing new features: an A-Frame-lik
     *   Modified `material.js` to remove all event listener logic and instead check for the existence of `this.el.geometryMesh` in its `update` method before calling `_applyMaterial`.
     *   Cleaned up debugging logs from both components.
     *   Rebuilt library (`npm run build`).
+24. **NEW:** Documentation Overhaul: **DONE**
+    *   Added CDN links (using provided Firebase Storage URLs) to `docs/getting-started.md`.
+    *   Created `docs/examples/index.md` as an overview page.
+    *   Created individual Markdown files in `docs/examples/` for each example HTML file, embedding the source code.
+    *   Removed the old `docs/examples.md`.
+    *   Updated `mkdocs.yml` navigation to use the new examples structure.
 
 ## Next Steps
 
-1.  **NEW:** Implement Asset Management System (`<bml-assets>`).
+1.  **Implement Asset Management System (`<bml-assets>`).**
     *   Define `<bml-assets>` custom element.
     *   Implement logic for preloading assets (meshes, textures, etc.) defined within `<bml-assets>`.
     *   Modify components (e.g., `geometry`, `material`) to reference assets by ID (e.g., `src="#myModel"`).
     *   Add documentation for asset management.
     *   Create examples.
-2.  **NEW:** Implement Text Component (`src/components/text.js`).
+2.  **Implement Text Component (`src/components/text.js`).**
     *   Decide on approach (e.g., using Babylon.js GUI, Dynamic Texture, or a dedicated text mesh library).
     *   Create the component with properties like `value`, `font`, `size`, `color`.
     *   Register the component.
     *   Add documentation.
     *   Create examples.
-3.  **Deferred:** Update `memory-bank/progress.md` (will be updated after new features).
+3.  **Deferred:** Update `memory-bank/progress.md` (will be updated after documentation changes).
 4.  **Deferred:** Run the library build process (`npm run build`).
-5.  **Deferred:** Test the documentation site locally (`npm run docs:serve`).
-6.  **Deferred:** Test the live examples (lights, PBR, animation, inspector, **sound, and new features**).
-7.  **Deferred:** Update `README.md` to mention recent features (XR, camera, inspector, light, PBR material, animation, **sound, assets, text**).
+5.  **Deferred:** Test the documentation site locally (`npm run docs:serve`) to verify new structure.
+6.  **Deferred:** Test the live examples (all examples linked from the new docs structure).
+7.  **Deferred:** Update `README.md` to mention recent features (XR, camera, inspector, light, PBR material, animation, sound, **assets, text**) and link to the improved documentation.
 8.  **Deferred:** Update `package.json` version if appropriate.
 
 -   **Camera Activation:** The first camera component initialized is set as active. Need to consider behavior if multiple cameras are defined or if the active one is removed dynamically. **Status: Basic 'first-one-wins' logic implemented and documented.**
