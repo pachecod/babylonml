@@ -2,7 +2,7 @@
 
 [build]
 # Command to build the site: Install MkDocs, then run the build using python -m to ensure it's found
-command = "pip install mkdocs && python -m mkdocs build --clean --site-dir _site"
+command = "pip install mkdocs-material && python -m mkdocs build --clean --site-dir _site"
 # Directory containing the built site relative to the repository root
 publish = "_site"
 
