@@ -33,15 +33,17 @@ export default function registerTextComponent(ComponentManager) {
             // console.log('Updating text component:', this.data);
             // Add extra guard for this.el itself
             if (!this.el) {
-                 console.warn("Text component update called before 'this.el' was ready.");
-                 return;
-            }
-            if (!this.el.babylonNode || !this.sceneElement?.babylonScene) { // Use babylonNode
+                  console.warn("Text component update called before 'this.el' was ready.");
+                  return;
+             }
+            // Access sceneElement via this.el
+            const sceneElement = this.el.sceneElement;
+            if (!this.el.babylonNode || !sceneElement?.babylonScene) {
                 console.warn("Text component update called before babylonNode or scene was ready on", this.el);
                 return;
             }
 
-            const scene = this.sceneElement.babylonScene;
+            const scene = sceneElement.babylonScene; // Use variable derived from this.el
             const data = this.data;
 
             // --- Get or Create Plane Mesh ---

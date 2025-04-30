@@ -22,67 +22,91 @@ export function registerCameraComponent(ComponentManager) { // Keep the registra
 
         // init() is called once when the component is first attached.
         init(data) {
-            // 'this' refers to the BmlEntity HTML element.
-            // Access scene and canvas via the entity's sceneElement getter
-            const sceneElement = this.sceneElement;
-            if (!sceneElement || !sceneElement.isReady || !sceneElement.babylonScene || !sceneElement.babylonCanvas) {
-                // This check should technically be redundant now due to BmlEntity waiting for scene ready,
-                // but it's good defensive programming.
-                console.error("Camera component init: Scene element or Babylon scene/canvas not ready on element:", this);
-                return;
+            // 'this' is the component instance object. Access the element via 'this.el'
+            const entityElement = this.el;
+            const sceneElement = entityElement.sceneElement; // Use the element's getter
+            // console.log('Camera component init started for element:', entityElement.id || 'no-id'); // Log start
+
+            const setupCamera = () => {
+                // console.log('Camera component: setupCamera() called for element:', entityElement.id || 'no-id'); // Log callback execution
+                // Re-check sceneElement and its properties here as they might have become available
+                const currentSceneElement = entityElement.sceneElement;
+                if (!currentSceneElement || !currentSceneElement.babylonScene || !currentSceneElement.babylonCanvas) {
+                    console.error("Camera component setupCamera: Scene element or Babylon scene/canvas not ready on element:", entityElement);
+                    return;
+                }
+                // Store scene/canvas refs on the component instance ('this')
+                this.scene = currentSceneElement.babylonScene;
+                this.canvas = currentSceneElement.babylonCanvas;
+                this._cameraInstance = null; // Initialize placeholder on the component instance
+                // console.log('Camera component setupCamera: Scene/canvas references set for element:', entityElement.id || 'no-id');
+                // Note: Actual camera creation happens in update(), called after init.
+            };
+
+            if (sceneElement && sceneElement.isReady) {
+                // console.log('Camera component init: Scene already ready for element:', entityElement.id || 'no-id');
+                setupCamera();
+            } else if (sceneElement) {
+                // console.log('Camera component init: Scene not ready, adding event listener for element:', entityElement.id || 'no-id');
+                // Define the listener function separately for clarity and removal
+                const sceneReadyListener = (event) => {
+                    // console.log(`Camera component: 'bml-scene-ready' event received for element: ${entityElement.id || 'no-id'}`, event.detail); // <<< Log inside callback
+                    // Ensure we remove the listener after it runs
+                    sceneElement.removeEventListener('bml-scene-ready', sceneReadyListener);
+                    // console.log(`Camera component: Removed 'bml-scene-ready' listener for element: ${entityElement.id || 'no-id'}`);
+                    setupCamera();
+                };
+                sceneElement.addEventListener('bml-scene-ready', sceneReadyListener);
+                // console.log(`Camera component init: Added 'bml-scene-ready' event listener for element: ${entityElement.id || 'no-id'}`); // <<< Log after adding listener
+            } else {
+                // This case should be less likely now if BmlEntity waits, but keep for safety
+                console.error("Camera component init: Could not find sceneElement for element:", entityElement);
+                // Component won't function without the scene.
             }
-            this.scene = sceneElement.babylonScene;
-            this.canvas = sceneElement.babylonCanvas;
-            this._cameraInstance = null; // Use a different name to avoid potential conflicts
-            // console.log('Camera component initialized on element:', this);
         },
 
         // update() is called on initialization *after* init(), and whenever the attribute changes.
         update(data, oldData) { // Accept parsed data object and optional oldData
-            // 'this' refers to the BmlEntity HTML element.
+            // 'this' is the component instance object. Access element via 'this.el'
+            const entityElement = this.el;
             // 'data' is the parsed attribute value (e.g., { type: 'arcRotate', ... })
             // 'oldData' is the previously parsed data (for comparison)
 
-            // Re-verify scene/canvas access in case something went wrong after init
-            const sceneElement = this.sceneElement;
-            if (!this.scene || !this.canvas) { // Check if they were set during init
-                 if (sceneElement && sceneElement.isReady && sceneElement.babylonScene && sceneElement.babylonCanvas) {
-                     // Attempt to re-acquire references if init failed but scene is now ready
-                     this.scene = sceneElement.babylonScene;
-                     this.canvas = sceneElement.babylonCanvas;
+            // Re-verify scene/canvas access using the stored refs on 'this' (the instance)
+            if (!this.scene || !this.canvas) {
+                 // Attempt to re-acquire references if init/setupCamera failed but scene is now ready
+                 const currentSceneElement = entityElement.sceneElement;
+                 if (currentSceneElement && currentSceneElement.isReady && currentSceneElement.babylonScene && currentSceneElement.babylonCanvas) {
+                     this.scene = currentSceneElement.babylonScene;
+                     this.canvas = currentSceneElement.babylonCanvas;
                      console.warn("Camera component update: Re-acquired scene/canvas references.");
                  } else {
-                     console.error("Camera update called before scene/canvas were ready or available on element:", this);
+                     console.error("Camera update called before scene/canvas were ready or available on element:", entityElement);
                      return; // Still not ready
                  }
             }
 
-            // If camera exists, dispose the old one before creating a new one
+            // If camera exists on the instance, dispose the old one before creating a new one
             if (this._cameraInstance) {
-                // Use the parsed 'attachControl' value from the *previous* state if possible,
-                // otherwise default to true for detachment check.
-                // TODO: Pass oldData to update to handle this properly for attachControl state.
-                if (this._cameraInstance.detachControl) { // Check if method exists
+                // Use the parsed 'attachControl' value from the *previous* data (oldData)
+                const oldAttachControl = oldData?.attachControl ?? this.schema?.attachControl?.default ?? true;
+
+                if (oldAttachControl && this._cameraInstance.detachControl) { // Check if method exists
                     try {
-                         this._cameraInstance.detachControl(this.canvas); // Use the stored canvas reference
+                         this._cameraInstance.detachControl(this.canvas); // Use the stored canvas reference from the instance
                     } catch (e) {
                          console.warn("Error detaching camera control:", e);
                     }
                 }
                 this._cameraInstance.dispose();
-                this._cameraInstance = null;
+                this._cameraInstance = null; // Clear instance property
                 // If this was the active camera, we might need to reset the flag,
-            // but typically update shouldn't change the *active* status easily.
+                // but typically update shouldn't change the *active* status easily.
                 // For simplicity, we assume the first camera remains active unless removed.
             }
 
-            // Get the raw attribute string directly from the element ('this')
-            // const attributeValue = this.getAttribute('camera') || ''; // Raw value not needed directly if data is parsed correctly
-            // const props = parseObjectString(attributeValue); // Parsed data is passed directly
-
-            // Access schema via the component instance stored on the element
-            const componentInstance = this.getAttachedComponents()['camera'];
-            const schema = componentInstance?.schema; // Get schema from the stored instance
+            // Access schema from the instance ('this')
+            const schema = this.schema;
 
             // Ensure data is an object
             const currentData = data || {};
@@ -115,25 +139,25 @@ export function registerCameraComponent(ComponentManager) { // Keep the registra
                 case 'arcRotate':
             case 'arcrotate':
                 // Use element's ID if available, otherwise generate one?
-                const camNameArc = `${this.id || 'bmlEntity'}_arcRotateCamera`;
-                this._cameraInstance = new ArcRotateCamera(
+                const camNameArc = `${entityElement.id || 'bmlEntity'}_arcRotateCamera`;
+                this._cameraInstance = new ArcRotateCamera( // Assign to instance property
                     camNameArc,
                     alpha,
                     beta,
                     radius,
                     targetVec,
-                    this.scene
+                    this.scene // Use scene from instance
                 );
                 // ArcRotateCamera position is determined by alpha, beta, radius, target
                 break;
             case 'universal':
             case 'free': // Treat free as universal for now
             default:
-                 const camNameUni = `${this.id || 'bmlEntity'}_universalCamera`;
-                this._cameraInstance = new UniversalCamera(
+                 const camNameUni = `${entityElement.id || 'bmlEntity'}_universalCamera`;
+                this._cameraInstance = new UniversalCamera( // Assign to instance property
                     camNameUni,
                     positionVec,
-                    this.scene
+                    this.scene // Use scene from instance
                 );
                 this._cameraInstance.setTarget(targetVec); // UniversalCamera needs target set explicitly
                 break;
@@ -151,55 +175,62 @@ export function registerCameraComponent(ComponentManager) { // Keep the registra
             // Attach controls if specified
             if (attachControl && this._cameraInstance.attachControl) {
                  try {
-                    this._cameraInstance.attachControl(this.canvas, true); // Use stored canvas reference
+                    this._cameraInstance.attachControl(this.canvas, true); // Use stored canvas reference from instance
                  } catch (e) {
                      console.warn("Error attaching camera control:", e);
                  }
             }
         } else {
-            console.error(`BML Camera Component: Failed to create camera of type "${type}" on element:`, this);
+            console.error(`BML Camera Component: Failed to create camera of type "${type}" on element:`, entityElement);
         }
     },
 
         // remove() is called once when the component is detached.
         remove() {
-            // 'this' refers to the BmlEntity HTML element.
-            if (this._cameraInstance) {
+            // 'this' is the component instance object. Access element via 'this.el'
+            const entityElement = this.el;
+            if (this._cameraInstance) { // Check instance property
                  // Detach controls if attached
-                 // Use the last known 'attachControl' state from the component's data if possible
-                 // Access the component instance data via the entity's internal map
-                 const componentInstance = this.getAttachedComponents()['camera']; // Get the instance
-                 const lastData = componentInstance?.data; // Get last known data from the instance
-                 const lastAttachControl = parseBoolean(lastData?.attachControl, componentInstance?.schema?.attachControl?.default ?? true); // Use schema default as fallback
+                 // Use the last known 'attachControl' state from this component instance's data
+                 const lastData = this.data; // Get last known data from this instance
+                 const lastAttachControl = parseBoolean(lastData?.attachControl, this.schema?.attachControl?.default ?? true); // Use schema default as fallback
 
                  if (lastAttachControl && this._cameraInstance.detachControl) {
                      try {
-                        this._cameraInstance.detachControl(this.canvas); // Use stored canvas reference
+                        // Use the canvas reference stored on the instance during init/update
+                        if (this.canvas) {
+                            this._cameraInstance.detachControl(this.canvas);
+                        } else {
+                            console.warn("Camera component remove: Cannot detach control, canvas reference missing.");
+                        }
                      } catch (e) {
                          console.warn("Error detaching camera control during remove:", e);
                      }
                  }
 
                  // If this camera was the active one, reset the flag and potentially set a default
-                 if (this.scene && this.scene.activeCamera === this._cameraInstance) {
+                 // Use the scene reference stored on the instance
+                 const scene = this.scene;
+                 if (scene && scene.activeCamera === this._cameraInstance) {
                      activeCameraSet = false;
                      // Consider creating/setting a default camera here if needed,
                      // otherwise the scene might become unusable. For now, just log.
                      console.log(`BML Camera Component: Removed active camera ${this._cameraInstance.name}. Scene may need a new active camera.`);
-                     // Maybe: this.scene.createDefaultCameraOrLight(true, true, true); // Create default camera if none exists
-                     this.scene.activeCamera = null; // Set to null, Babylon might create a default on next frame if needed
+                     // Maybe: scene.createDefaultCameraOrLight(true, true, true); // Create default camera if none exists
+                     scene.activeCamera = null; // Set to null, Babylon might create a default on next frame if needed
                  }
 
                  this._cameraInstance.dispose();
-                 this._cameraInstance = null;
+                 this._cameraInstance = null; // Clear instance property
             }
             // Reset the flag when the component is removed, regardless of whether it was active?
             // This might be problematic if multiple cameras exist. Let's only reset if it WAS the active one.
-            // if (this.scene.activeCamera === null && !activeCameraSet) {
+            // const scene = this.scene; // Get scene ref again
+            // if (scene && scene.activeCamera === null && !activeCameraSet) {
                  // Check if other camera components exist and make one active? Complex.
                  // For now, rely on Babylon's default behavior or manual setup if the primary camera is removed.
             // }
-            // console.log('Camera component removed from element:', this);
+            // console.log(`Camera component removed from element: ${entityElement.id || 'no-id'}`);
         }
     });
 }

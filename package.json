@@ -8,7 +8,8 @@
     "build": "rollup -c",
     "docs:serve": "/home/sonny/.local/bin/mkdocs serve",
     "docs:build": "/home/sonny/.local/bin/mkdocs build",
-    "serve:examples": "python3 -m http.server 8080 --bind 0.0.0.0"
+    "serve:examples": "python3 -m http.server 8080 --bind 0.0.0.0",
+    "sync:examples": "node scripts/sync-examples.js"
   },
   "keywords": [],
   "author": "",

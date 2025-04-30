@@ -6,7 +6,7 @@ This example demonstrates how to load an external 3D model (in `.glb` format) in
 *   BabylonML handles the asynchronous loading of the mesh.
 *   Basic camera and lighting are included for visibility.
 
-[View Live Example](../../examples/mesh_example.html)
+[View Live Example](https://babylonml-frontend.netlify.app/examples/mesh_example.html)
 
 ## Source Code
 
