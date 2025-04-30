@@ -30,7 +30,6 @@ nav:
     - Animation: examples/animation_scene.md
     - AR Scene: examples/ar_scene.md
     - Assets (Planned): examples/assets_scene.md
-    - Explicit Cam/Light: examples/explicit_camera_light_placeholder.md
     - Lights: examples/lights_scene.md
     - Mesh Loading: examples/mesh_example.md
     - Multi-Camera: examples/multi_camera_scene.md

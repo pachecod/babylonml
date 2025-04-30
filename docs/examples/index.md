@@ -6,9 +6,8 @@ This section provides various examples demonstrating the features and usage of B
 
 *   **[Animation Scene](animation_scene.md):** Demonstrates using the `animation` component to animate entity properties. ([Live Example](../../examples/animation_scene.html))
 *   **[AR Scene](ar_scene.md):** Shows basic Augmented Reality setup using the `xr="ar"` attribute. ([Live Example](../../examples/ar_scene.html))
-*   **[Assets Scene](assets_scene.md):** (Placeholder - Demonstrates asset management - *To be implemented*) ([Live Example](../../examples/assets_scene.html))
+*   **[Assets Scene](assets_scene.md):** ([Live Example](../../examples/assets_scene.html))
 *   **[Basic Scene](basic_scene.md):** A fundamental example showing a simple scene with basic entities and components. ([Live Example](../../examples/basic_scene.html))
-*   **[Explicit Camera/Light Placeholder](explicit_camera_light_placeholder.md):** Shows how explicitly defining a camera prevents the default one, and the placeholder `light` attribute. ([Live Example](../../examples/explicit_camera_light_placeholder.html))
 *   **[Lights Scene](lights_scene.md):** Demonstrates different types of lights using the `light` component. ([Live Example](../../examples/lights_scene.html))
 *   **[Mesh Example](mesh_example.md):** Shows how to load and display a `.glb` mesh model using the `geometry` component. ([Live Example](../../examples/mesh_example.html))
 *   **[Multi-Camera Scene](multi_camera_scene.md):** Demonstrates defining multiple cameras and switching between them. ([Live Example](../../examples/multi_camera_scene.html))
